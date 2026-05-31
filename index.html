@@ -2,6 +2,12 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+  <meta name="theme-color" content="#1a1a2e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="监狱博物馆地图">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a1a2e'/><text x='50' y='65' text-anchor='middle' font-size='50'>🏛</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>世界监狱博物馆地图</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -306,6 +312,10 @@
   body.dark .popup-desc { color: #bbb; }
   body.dark .popup-info-text { color: #aaa; }
   body.dark .popup-website { color: #4a9eff; }
+  body.dark .popup-share-btn { background: #1a1a3e; border-color: #2a2a5e; color: #aaa; }
+  body.dark .popup-share-btn:hover { background: #2a2a4e; color: #ccc; }
+  body.dark #stats-panel .st-close { color: #888; }
+  body.dark #stats-panel .st-close:hover { color: #fff; }
   body.dark #map-footer { background: rgba(22,33,62,0.95); color: #aaa; }
   body.dark .stat-label { color: #aaa; }
   body.dark .stat-item { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
@@ -361,6 +371,100 @@
   .popup-wish-btn.checked { background: #f0c000; }
   .popup-wish-btn:hover { opacity: 0.9; }
 
+
+  /* ===== STATS PANEL ===== */
+  #stats-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); z-index: 10000;
+    align-items: center; justify-content: center;
+  }
+  #stats-overlay.active { display: flex; }
+  #stats-panel {
+    background: #fff; border-radius: 16px; width: 480px; max-width: 92vw;
+    max-height: 85vh; overflow-y: auto; box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+    padding: 28px 24px 20px; position: relative;
+  }
+  body.dark #stats-panel { background: #16213e; color: #e0e0e0; }
+  #stats-panel h3 { font-size: 18px; margin: 0 0 20px; text-align: center; }
+  .st-close {
+    position: absolute; top: 12px; right: 16px; background: none; border: none;
+    font-size: 22px; cursor: pointer; color: #999; padding: 4px 8px;
+  }
+  .st-close:hover { color: #333; }
+  body.dark .st-close:hover { color: #fff; }
+  .st-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .st-card {
+    text-align: center; padding: 16px 10px; border-radius: 12px;
+    background: #f8f9fa; border: 1px solid #eee;
+  }
+  body.dark .st-card { background: #1a1a3e; border-color: #2a2a5e; }
+  .st-card .st-val { font-size: 32px; font-weight: 800; }
+  .st-card .st-lbl { font-size: 12px; color: #888; margin-top: 4px; }
+  body.dark .st-card .st-lbl { color: #aaa; }
+  .st-progress-wrap { margin: 16px 0; }
+  .st-progress-bar {
+    height: 10px; border-radius: 5px; background: #eee;
+    overflow: hidden; margin-top: 4px;
+  }
+  body.dark .st-progress-bar { background: #2a2a5e; }
+  .st-progress-fill {
+    height: 100%; border-radius: 5px; background: linear-gradient(90deg, #51cf66, #ffd700);
+    transition: width 0.5s ease;
+  }
+  .st-region-list { margin-top: 16px; }
+  .st-region-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 0; font-size: 13px; border-bottom: 1px solid #f0f0f0;
+  }
+  body.dark .st-region-row { border-color: #2a2a5e; }
+  .st-region-name { display: flex; align-items: center; gap: 6px; }
+  .st-region-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .st-region-bar {
+    flex: 1; height: 6px; background: #eee; border-radius: 3px;
+    margin: 0 12px; overflow: hidden;
+  }
+  body.dark .st-region-bar { background: #2a2a5e; }
+  .st-region-fill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+
+  /* ===== SHARE CARD MODAL ===== */
+  #share-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.75); z-index: 10001;
+    align-items: center; justify-content: center; flex-direction: column;
+  }
+  #share-overlay.active { display: flex; }
+  #share-canvas-wrap {
+    position: relative; background: #fff; border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3); overflow: hidden;
+  }
+  #share-canvas-wrap canvas { display: block; max-width: 90vw; max-height: 75vh; }
+  .sh-actions { margin-top: 16px; display: flex; gap: 10px; }
+  .sh-btn {
+    padding: 8px 20px; border-radius: 20px; font-size: 14px; cursor: pointer;
+    border: none; font-weight: 600; transition: opacity 0.15s;
+  }
+  .sh-btn:hover { opacity: 0.85; }
+  .sh-btn.download { background: #4a9eff; color: #fff; }
+  .sh-btn.close-sh { background: #ddd; color: #333; }
+  body.dark .sh-btn.close-sh { background: #333; color: #ccc; }
+
+  /* ===== PWA INSTALL BANNER ===== */
+  #pwa-banner {
+    display: none; position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    background: #1a1a2e; color: #fff; border-radius: 12px; padding: 12px 20px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3); z-index: 9998;
+    align-items: center; gap: 12px; font-size: 13px; white-space: nowrap;
+  }
+  #pwa-banner.active { display: flex; }
+  #pwa-install-btn {
+    padding: 5px 14px; border-radius: 16px; border: none; cursor: pointer;
+    background: #ffd700; color: #1a1a2e; font-weight: 600; font-size: 12px;
+  }
+  #pwa-dismiss {
+    background: none; border: none; color: #888; cursor: pointer;
+    font-size: 16px; padding: 0 4px;
+  }
+
   /* Responsive */
   @media (max-width: 768px) {
     #sidebar { width: 240px; min-width: 200px; }
@@ -397,7 +501,7 @@
   <div id="sidebar">
     <div id="sidebar-header">
       <h2>🔍 博物馆列表</h2>
-      <input type="text" id="search-box" placeholder="搜索名称、城市、国家…" oninput="filterList()">
+      <div style="display:flex;gap:6px;margin-top:6px;align-items:center;"><input type="text" id="search-box" placeholder="搜索名称、城市、国家…" oninput="filterList()" style="flex:1;"><button onclick="showStats()" style="background:none;border:1px solid #ddd;border-radius:16px;padding:5px 12px;cursor:pointer;font-size:12px;white-space:nowrap;flex-shrink:0;" title="查看统计">📊</button></div>
     </div>
     <div id="region-filter">
       <button class="region-btn active" onclick="setRegion('全部', this)">全部</button>
@@ -1196,6 +1300,9 @@ function showPopup(museum) {
       onclick="toggleCheck(${museum.id})">
       ${btnText}
     </button>
+    <button class="popup-share-btn" onclick="showShareCard(event)" style="display:block;width:100%;margin-top:4px;padding:6px;border:1px solid #ddd;border-radius:6px;background:#f8f9fa;cursor:pointer;font-size:12px;">
+      📤 分享打卡
+    </button>
   </div>`;
 
   markers[museum.id].bindPopup(content, {
@@ -1439,6 +1546,297 @@ function lbNav(dir, e) {
   }
 })();
 
+// ============================================================
+// STATS PANEL
+// ============================================================
+function showStats() {
+  const total = MUSEUMS.length;
+  const checked = MUSEUMS.filter(m => checkedSet.has(m.id)).length;
+  const wished = MUSEUMS.filter(m => wishSet.has(m.id)).length;
+  const unvisited = total - checked - wished;
+  const countries = new Set(MUSEUMS.map(m => m.country)).size;
+  const regions = new Set(MUSEUMS.map(m => m.region)).size;
+  const pct = Math.round(checked / total * 100);
+
+  const cntColors = ['#ff6b6b','#51cf66','#ffd700'];
+  const cntVals = [checked, wished, unvisited];
+  const cntLabels = ['已打卡','想去','未探索'];
+  const cntIcons = ['✅','⭐','⭕'];
+  var gridHtml = '';
+  for (var i = 0; i < 3; i++) {
+    gridHtml += '<div class="st-card"><div class="st-val" style="color:' + cntColors[i] + '">' + cntVals[i] + '</div><div class="st-lbl">' + cntIcons[i] + ' ' + cntLabels[i] + '</div></div>';
+  }
+  gridHtml += '<div class="st-card"><div class="st-val">' + countries + '</div><div class="st-lbl">🌍 覆盖国家</div></div>';
+  gridHtml += '<div class="st-card"><div class="st-val">' + regions + '</div><div class="st-lbl">🗺 覆盖区域</div></div>';
+  gridHtml += '<div class="st-card"><div class="st-val" style="color:#4a9eff">' + pct + '%</div><div class="st-lbl">📈 完成率</div></div>';
+  document.getElementById('st-grid').innerHTML = gridHtml;
+  document.getElementById('st-progress-fill').style.width = pct + '%';
+  document.getElementById('st-pct-text').textContent = pct + '%';
+
+  // Region breakdown
+  var regionStats = {};
+  MUSEUMS.forEach(function(m) {
+    if (!regionStats[m.region]) regionStats[m.region] = {total: 0, checked: 0};
+    regionStats[m.region].total++;
+    if (checkedSet.has(m.id)) regionStats[m.region].checked++;
+  });
+  var regionHtml = '<div style="font-size:14px;font-weight:600;margin:12px 0 8px;">📋 区域详情</div>';
+  var sortedRegions = Object.keys(regionStats).sort(function(a, b) {
+    return regionStats[b].checked - regionStats[a].checked;
+  });
+  sortedRegions.forEach(function(r) {
+    var s = regionStats[r];
+    var rpct = Math.round(s.checked / s.total * 100);
+    regionHtml += '<div class="st-region-row">' +
+      '<div class="st-region-name"><span class="st-region-dot" style="background:' + getColor(r) + '"></span>' + r + '</div>' +
+      '<div class="st-region-bar"><div class="st-region-fill" style="width:' + rpct + '%;background:' + getColor(r) + '"></div></div>' +
+      '<span style="font-size:11px;color:#888;min-width:48px;text-align:right;">' + s.checked + '/' + s.total + '</span>' +
+      '</div>';
+  });
+  document.getElementById('st-region-list').innerHTML = regionHtml;
+
+  document.getElementById('stats-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeStats(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('stats-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// ============================================================
+// SHARE CARD
+// ============================================================
+function showShareCard(e) {
+  if (e) e.stopPropagation();
+  var total = MUSEUMS.length;
+  var checked = MUSEUMS.filter(function(m) { return checkedSet.has(m.id); }).length;
+  var wished = MUSEUMS.filter(function(m) { return wishSet.has(m.id); }).length;
+  var pct = Math.round(checked / total * 100);
+
+  var canvas = document.getElementById('share-canvas');
+  var w = 600, h = 800;
+  canvas.width = w;
+  canvas.height = h;
+  var ctx = canvas.getContext('2d');
+
+  // Background
+  var bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+  bgGrad.addColorStop(0, '#0f0c29');
+  bgGrad.addColorStop(0.5, '#1a1a2e');
+  bgGrad.addColorStop(1, '#16213e');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, w, h);
+
+  // Decorative bars (jail cell effect)
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 1;
+  for (var i = 0; i < 20; i++) {
+    var bx = i * 32;
+    ctx.beginPath();
+    ctx.moveTo(bx, 0);
+    ctx.lineTo(bx, h);
+    ctx.stroke();
+  }
+
+  // Top accent
+  var accentGrad = ctx.createLinearGradient(0, 0, w, 0);
+  accentGrad.addColorStop(0, '#ffd700');
+  accentGrad.addColorStop(0.5, '#ff6b6b');
+  accentGrad.addColorStop(1, '#4a9eff');
+  ctx.fillStyle = accentGrad;
+  ctx.fillRect(0, 0, w, 6);
+
+  // Title
+  ctx.fillStyle = '#ffd700';
+  ctx.font = 'bold 32px "Microsoft YaHei", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('🏛 世界监狱博物馆', w/2, 80);
+
+  ctx.fillStyle = '#ccc';
+  ctx.font = '18px "Microsoft YaHei", sans-serif';
+  ctx.fillText('打卡地图', w/2, 115);
+
+  // Stats box
+  var boxX = 60, boxY = 160, boxW = 480, boxH = 180;
+  ctx.fillStyle = 'rgba(255,255,255,0.05)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 1;
+  roundRect(ctx, boxX, boxY, boxW, boxH, 16);
+  ctx.fill();
+  ctx.stroke();
+
+  // Big number
+  ctx.fillStyle = '#ffd700';
+  ctx.font = 'bold 72px "Microsoft YaHei", sans-serif';
+  ctx.fillText(String(checked), w/2, 240);
+
+  ctx.fillStyle = '#aaa';
+  ctx.font = '18px "Microsoft YaHei", sans-serif';
+  ctx.fillText('已打卡 / 共 ' + total + ' 座', w/2, 275);
+
+  ctx.fillStyle = '#888';
+  ctx.font = '14px "Microsoft YaHei", sans-serif';
+  ctx.fillText('想去 ' + wished + ' 座 | 探索了 ' + new Set(MUSEUMS.filter(function(m){return checkedSet.has(m.id)}).map(function(m){return m.country})).size + ' 个国家', w/2, 300);
+
+  // Progress bar
+  var pbarX = 80, pbarY = 365, pbarW = 440, pbarH = 14;
+  ctx.fillStyle = 'rgba(255,255,255,0.1)';
+  roundRect(ctx, pbarX, pbarY, pbarW, pbarH, 7);
+  ctx.fill();
+
+  var pGrad = ctx.createLinearGradient(pbarX, 0, pbarX + pbarW * (pct/100), 0);
+  pGrad.addColorStop(0, '#51cf66');
+  pGrad.addColorStop(1, '#ffd700');
+  ctx.fillStyle = pGrad;
+  roundRect(ctx, pbarX, pbarY, pbarW * (pct/100), pbarH, 7);
+  ctx.fill();
+
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 12px "Microsoft YaHei", sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(pct + '%', pbarX + pbarW - 12, pbarY - 8);
+  ctx.textAlign = 'center';
+
+  // Top regions
+  ctx.fillStyle = '#ffd700';
+  ctx.font = 'bold 16px "Microsoft YaHei", sans-serif';
+  ctx.fillText('🏆 覆盖区域', w/2, 435);
+
+  var regionStats = {};
+  MUSEUMS.forEach(function(m) {
+    if (!regionStats[m.region]) regionStats[m.region] = {total: 0, checked: 0};
+    regionStats[m.region].total++;
+    if (checkedSet.has(m.id)) regionStats[m.region].checked++;
+  });
+  var topRegions = Object.entries(regionStats)
+    .filter(function(e) { return e[1].checked > 0; })
+    .sort(function(a, b) { return b[1].checked - a[1].checked; })
+    .slice(0, 5);
+
+  var ry = 470;
+  topRegions.forEach(function(e) {
+    var rName = e[0], rData = e[1];
+    ctx.fillStyle = '#ccc';
+    ctx.font = '13px "Microsoft YaHei", sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(rName + '  ' + rData.checked + '/' + rData.total, 100, ry);
+    // mini bar
+    var rpct = rData.checked / rData.total;
+    ctx.fillStyle = 'rgba(255,255,255,0.08)';
+    roundRect(ctx, 260, ry - 11, 220, 14, 7);
+    ctx.fill();
+    ctx.fillStyle = getCanvasColor(rName);
+    roundRect(ctx, 260, ry - 11, 220 * rpct, 14, 7);
+    ctx.fill();
+    ry += 36;
+  });
+
+  // Footer
+  ctx.fillStyle = '#666';
+  ctx.font = '12px "Microsoft YaHei", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('prison-museum-map | 探索历史的暗角', w/2, h - 60);
+
+  var ftGrad = ctx.createLinearGradient(w/2-100, 0, w/2+100, 0);
+  ftGrad.addColorStop(0, 'rgba(74,158,255,0.5)');
+  ftGrad.addColorStop(0.5, 'rgba(255,215,0,0.5)');
+  ftGrad.addColorStop(1, 'rgba(81,207,102,0.5)');
+  ctx.fillStyle = ftGrad;
+  ctx.fillRect(w/2-100, h-38, 200, 2);
+
+  document.getElementById('share-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeShare(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('share-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function downloadShareCard() {
+  var canvas = document.getElementById('share-canvas');
+  var link = document.createElement('a');
+  link.download = 'prison-museum-map.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function getCanvasColor(region) {
+  var c = getColor(region);
+  // getColor returns hex, we need to return it as-is for canvas
+  return c;
+}
+
+// ============================================================
+// PWA INSTALL
+// ============================================================
+var deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Show banner after delay
+  setTimeout(function() {
+    if (localStorage.getItem('pwa_dismissed') !== '1') {
+      document.getElementById('pwa-banner').classList.add('active');
+    }
+  }, 3000);
+});
+
+window.addEventListener('appinstalled', function() {
+  deferredPrompt = null;
+  document.getElementById('pwa-banner').classList.remove('active');
+});
+
+function installPWA() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(result) {
+      if (result.outcome === 'accepted') {
+        document.getElementById('pwa-banner').classList.remove('active');
+      }
+      deferredPrompt = null;
+    });
+  } else {
+    // Fallback: show instructions
+    alert('请在浏览器菜单中选择"添加到主屏幕"或"安装应用"');
+  }
+}
+
+function dismissPWA() {
+  document.getElementById('pwa-banner').classList.remove('active');
+  localStorage.setItem('pwa_dismissed', '1');
+}
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').then(function(reg) {
+      console.log('SW registered');
+    }).catch(function(err) {
+      console.log('SW failed:', err);
+    });
+  });
+}
+
+
 window.onload = function() {
   initMap();
   updateStats();
@@ -1452,5 +1850,37 @@ window.onload = function() {
   <button class="lb-next" onclick="lbNav(1, event)">›</button>
   <div class="lb-caption" id="lb-caption"></div>
 </div>
+
+<div id="stats-overlay" onclick="closeStats(event)">
+  <div id="stats-panel" onclick="event.stopPropagation()">
+    <button class="st-close" onclick="closeStats()">✕</button>
+    <h3>📊 打卡统计</h3>
+    <div class="st-grid" id="st-grid"></div>
+    <div class="st-progress-wrap">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#888;">
+        <span>打卡进度</span><span id="st-pct-text">0%</span>
+      </div>
+      <div class="st-progress-bar"><div class="st-progress-fill" id="st-progress-fill" style="width:0%"></div></div>
+    </div>
+    <div class="st-region-list" id="st-region-list"></div>
+  </div>
+</div>
+
+<div id="share-overlay" onclick="closeShare(event)">
+  <div id="share-canvas-wrap" onclick="event.stopPropagation()">
+    <canvas id="share-canvas"></canvas>
+  </div>
+  <div class="sh-actions">
+    <button class="sh-btn download" onclick="downloadShareCard()">💾 保存图片</button>
+    <button class="sh-btn close-sh" onclick="closeShare()">关闭</button>
+  </div>
+</div>
+
+<div id="pwa-banner">
+  📱 将此网站安装到主屏幕
+  <button id="pwa-install-btn" onclick="installPWA()">安装</button>
+  <button class="pwa-dismiss" onclick="dismissPWA()">✕</button>
+</div>
+
 </body>
 </html>
