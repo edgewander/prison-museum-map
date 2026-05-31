@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -1582,21 +1582,19 @@ function showStats() {
   const total = MUSEUMS.length;
   const checked = MUSEUMS.filter(m => checkedSet.has(m.id)).length;
   const wished = MUSEUMS.filter(m => wishSet.has(m.id)).length;
-  const unvisited = total - checked - wished;
   const countries = new Set(MUSEUMS.map(m => m.country)).size;
   const regions = new Set(MUSEUMS.map(m => m.region)).size;
   const pct = Math.round(checked / total * 100);
 
-  const cntColors = ['#ff6b6b','#51cf66','#ffd700'];
-  const cntVals = [checked, wished, unvisited];
-  const cntLabels = ['已打卡','想去','未探索'];
-  const cntIcons = ['✅','⭐','⭕'];
+  const cntColors = ['#ff6b6b','#51cf66'];
+  const cntVals = [checked, wished];
+  const cntLabels = ['已打卡','想去'];
+  const cntIcons = ['✅','⭐'];
   var gridHtml = '';
-  for (var i = 0; i < 3; i++) {
+  for (var i = 0; i < 2; i++) {
     gridHtml += '<div class="st-card"><div class="st-val" style="color:' + cntColors[i] + '">' + cntVals[i] + '</div><div class="st-lbl">' + cntIcons[i] + ' ' + cntLabels[i] + '</div></div>';
   }
   gridHtml += '<div class="st-card"><div class="st-val">' + countries + '</div><div class="st-lbl">🌍 覆盖国家</div></div>';
-  gridHtml += '<div class="st-card"><div class="st-val">' + regions + '</div><div class="st-lbl">🗺 覆盖区域</div></div>';
   gridHtml += '<div class="st-card"><div class="st-val" style="color:#4a9eff">' + pct + '%</div><div class="st-lbl">📈 完成率</div></div>';
   document.getElementById('st-grid').innerHTML = gridHtml;
   document.getElementById('st-progress-fill').style.width = pct + '%';
