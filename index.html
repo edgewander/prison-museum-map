@@ -465,6 +465,35 @@
     font-size: 16px; padding: 0 4px;
   }
 
+
+  /* ===== EXPORT DROPDOWN ===== */
+  #export-btn-wrap { position: relative; }
+  #export-btn-wrap button {
+    background: none; border: 1px solid #ddd; border-radius: 16px;
+    padding: 5px 12px; cursor: pointer; font-size: 12px; white-space: nowrap;
+  }
+  body.dark #export-btn-wrap button { border-color: #3a3a5e; color: #aaa; }
+  #export-menu {
+    display: none; position: absolute; top: 34px; right: 0;
+    background: #fff; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    min-width: 180px; z-index: 200; overflow: hidden;
+  }
+  body.dark #export-menu { background: #1a1a3e; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+  #export-menu.active { display: block; }
+  .export-item {
+    display: block; width: 100%; padding: 10px 16px; border: none; background: none;
+    text-align: left; font-size: 13px; cursor: pointer; color: #333;
+    transition: background 0.1s;
+  }
+  body.dark .export-item { color: #ccc; }
+  .export-item:hover { background: #f0f4ff; }
+  body.dark .export-item:hover { background: #2a2a5e; }
+  .export-item .ei-icon { margin-right: 8px; }
+  .export-item .ei-desc { display: block; font-size: 11px; color: #999; margin-top: 2px; }
+  body.dark .export-item .ei-desc { color: #777; }
+  .export-item + .export-item { border-top: 1px solid #f0f0f0; }
+  body.dark .export-item + .export-item { border-top: 1px solid #2a2a5e; }
+
   /* Responsive */
   @media (max-width: 768px) {
     #sidebar { width: 240px; min-width: 200px; }
@@ -501,7 +530,7 @@
   <div id="sidebar">
     <div id="sidebar-header">
       <h2>🔍 博物馆列表</h2>
-      <div style="display:flex;gap:6px;margin-top:6px;align-items:center;"><input type="text" id="search-box" placeholder="搜索名称、城市、国家…" oninput="filterList()" style="flex:1;"><button onclick="showStats()" style="background:none;border:1px solid #ddd;border-radius:16px;padding:5px 12px;cursor:pointer;font-size:12px;white-space:nowrap;flex-shrink:0;" title="查看统计">📊</button></div>
+      <div style="display:flex;gap:6px;margin-top:6px;align-items:center;"><input type="text" id="search-box" placeholder="搜索名称、城市、国家…" oninput="filterList()" style="flex:1;"><button onclick="showStats()" style="background:none;border:1px solid #ddd;border-radius:16px;padding:5px 12px;cursor:pointer;font-size:12px;white-space:nowrap;flex-shrink:0;" title="查看统计">📊</button><div id="export-btn-wrap"><button id="export-btn" onclick="toggleExportMenu(event)" title="导出数据">📥</button><div id="export-menu"><button class="export-item" onclick="exportGPX()"><span class="ei-icon">🛰</span>导出 GPX<span class="ei-desc">已打卡坐标，导入导航软件</span></button><button class="export-item" onclick="exportCSV()"><span class="ei-icon">📋</span>导出 CSV<span class="ei-desc">全部数据表格，Excel可打开</span></button><button class="export-item" onclick="exportCollectionCard()"><span class="ei-icon">🖼</span>导出卡片图片<span class="ei-desc">打卡成就分享图</span></button></div></div></div>
     </div>
     <div id="region-filter">
       <button class="region-btn active" onclick="setRegion('全部', this)">全部</button>
@@ -1834,6 +1863,196 @@ if ('serviceWorker' in navigator) {
       console.log('SW failed:', err);
     });
   });
+}
+
+
+// ============================================================
+// EXPORT FUNCTIONS
+// ============================================================
+
+function toggleExportMenu(e) {
+  e.stopPropagation();
+  var menu = document.getElementById('export-menu');
+  menu.classList.toggle('active');
+}
+
+// Close export menu when clicking elsewhere
+document.addEventListener('click', function() {
+  document.getElementById('export-menu').classList.remove('active');
+});
+
+function sanitizeCSV(val) {
+  if (val === undefined || val === null) return '';
+  var s = String(val).replace(/"/g, '""');
+  return '"' + s + '"';
+}
+
+function escapeXML(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
+
+// ========= GPX Export =========
+function exportGPX() {
+  document.getElementById('export-menu').classList.remove('active');
+  var checked = MUSEUMS.filter(function(m) { return checkedSet.has(m.id); });
+  if (checked.length === 0) {
+    alert('还没有打卡记录，请先打卡一些博物馆再导出 GPX。');
+    return;
+  }
+
+  var header = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<gpx version="1.1" creator="PrisonMuseumMap"\n' +
+    '  xmlns="http://www.topografix.com/GPX/1/1"\n' +
+    '  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' +
+    '  xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">\n';
+
+  var wpts = '';
+  checked.forEach(function(m) {
+    wpts += '  <wpt lat="' + m.lat + '" lon="' + m.lng + '">\n';
+    wpts += '    <name>' + escapeXML(m.name) + '</name>\n';
+    wpts += '    <desc>' + escapeXML(m.country + ' · ' + m.region + (m.address ? ' | ' + m.address : '')) + '</desc>\n';
+    wpts += '    <sym>Museum</sym>\n';
+    wpts += '  </wpt>\n';
+  });
+
+  var gpx = header + wpts + '</gpx>';
+
+  var blob = new Blob([gpx], {type: 'application/gpx+xml'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'prison-museums-checked.gpx';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ========= CSV Export =========
+function exportCSV() {
+  document.getElementById('export-menu').classList.remove('active');
+
+  var header = '\uFEFF' + ['名称','国家','区域','地址','票价','开放时间','类型','状态','纬度','经度','描述'].join(',') + '\n';
+
+  var rows = MUSEUMS.map(function(m) {
+    var status = checkedSet.has(m.id) ? '已打卡' : (wishSet.has(m.id) ? '想去' : '未去');
+    return [
+      sanitizeCSV(m.name),
+      sanitizeCSV(m.country),
+      sanitizeCSV(m.region),
+      sanitizeCSV(m.address || ''),
+      sanitizeCSV(m.ticket || m.price || ''),
+      sanitizeCSV(m.hours || ''),
+      sanitizeCSV(m.type || '博物馆'),
+      sanitizeCSV(status),
+      m.lat,
+      m.lng,
+      sanitizeCSV(m.desc || '')
+    ].join(',');
+  });
+
+  var csv = header + rows.join('\n');
+  var blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'prison-museums-all.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ========= Collection Card Export (reuse share card canvas) =========
+function exportCollectionCard() {
+  document.getElementById('export-menu').classList.remove('active');
+  // Generate canvas silently (don't show overlay)
+  generateShareCanvas();
+  // slight delay to ensure canvas rendered, then download
+  setTimeout(function() {
+    downloadShareCard();
+  }, 50);
+}
+
+// Generate share card canvas without showing the overlay
+function generateShareCanvas() {
+  var total = MUSEUMS.length;
+  var checked = MUSEUMS.filter(function(m) { return checkedSet.has(m.id); }).length;
+  var wished = MUSEUMS.filter(function(m) { return wishSet.has(m.id); }).length;
+  var pct = Math.round(checked / total * 100);
+
+  var canvas = document.getElementById('share-canvas');
+  var w = 600, h = 800;
+  canvas.width = w;
+  canvas.height = h;
+  var ctx = canvas.getContext('2d');
+
+  var bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+  bgGrad.addColorStop(0, '#0f0c29');
+  bgGrad.addColorStop(0.5, '#1a1a2e');
+  bgGrad.addColorStop(1, '#16213e');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 1;
+  for (var i = 0; i < 20; i++) { ctx.beginPath(); ctx.moveTo(i*32, 0); ctx.lineTo(i*32, h); ctx.stroke(); }
+
+  var accentGrad = ctx.createLinearGradient(0, 0, w, 0);
+  accentGrad.addColorStop(0, '#ffd700'); accentGrad.addColorStop(0.5, '#ff6b6b'); accentGrad.addColorStop(1, '#4a9eff');
+  ctx.fillStyle = accentGrad; ctx.fillRect(0, 0, w, 6);
+
+  ctx.fillStyle = '#ffd700'; ctx.font = 'bold 32px "Microsoft YaHei", sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('\u{1F3DB} 世界监狱博物馆', w/2, 80);
+  ctx.fillStyle = '#ccc'; ctx.font = '18px "Microsoft YaHei", sans-serif';
+  ctx.fillText('打卡地图', w/2, 115);
+
+  var boxX = 60, boxY = 160, boxW = 480, boxH = 180;
+  ctx.fillStyle = 'rgba(255,255,255,0.05)'; ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1;
+  roundRect(ctx, boxX, boxY, boxW, boxH, 16); ctx.fill(); ctx.stroke();
+
+  ctx.fillStyle = '#ffd700'; ctx.font = 'bold 72px "Microsoft YaHei", sans-serif';
+  ctx.fillText(String(checked), w/2, 240);
+  ctx.fillStyle = '#aaa'; ctx.font = '18px "Microsoft YaHei", sans-serif';
+  ctx.fillText('\u5df2\u6253\u5361 / \u5171 ' + total + ' \u5ea7', w/2, 275);
+  ctx.fillStyle = '#888'; ctx.font = '14px "Microsoft YaHei", sans-serif';
+  ctx.fillText('\u60f3\u53bb ' + wished + ' \u5ea7 | \u63a2\u7d22\u4e86 ' + new Set(MUSEUMS.filter(function(m){return checkedSet.has(m.id)}).map(function(m){return m.country})).size + ' \u4e2a\u56fd\u5bb6', w/2, 300);
+
+  var pbarX = 80, pbarY = 365, pbarW = 440, pbarH = 14;
+  ctx.fillStyle = 'rgba(255,255,255,0.1)'; roundRect(ctx, pbarX, pbarY, pbarW, pbarH, 7); ctx.fill();
+  var pGrad = ctx.createLinearGradient(pbarX, 0, pbarX + pbarW * (pct/100), 0);
+  pGrad.addColorStop(0, '#51cf66'); pGrad.addColorStop(1, '#ffd700');
+  ctx.fillStyle = pGrad; roundRect(ctx, pbarX, pbarY, pbarW * (pct/100), pbarH, 7); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 12px "Microsoft YaHei", sans-serif'; ctx.textAlign = 'right';
+  ctx.fillText(pct + '%', pbarX + pbarW - 12, pbarY - 8); ctx.textAlign = 'center';
+
+  ctx.fillStyle = '#ffd700'; ctx.font = 'bold 16px "Microsoft YaHei", sans-serif';
+  ctx.fillText('\u{1F3C6} \u8986\u76d6\u533a\u57df', w/2, 435);
+
+  var regionStats = {};
+  MUSEUMS.forEach(function(m) {
+    if (!regionStats[m.region]) regionStats[m.region] = {total: 0, checked: 0};
+    regionStats[m.region].total++;
+    if (checkedSet.has(m.id)) regionStats[m.region].checked++;
+  });
+  var topRegions = Object.entries(regionStats)
+    .filter(function(e) { return e[1].checked > 0; })
+    .sort(function(a, b) { return b[1].checked - a[1].checked; })
+    .slice(0, 5);
+
+  var ry = 470;
+  topRegions.forEach(function(e) {
+    var rName = e[0], rData = e[1];
+    ctx.fillStyle = '#ccc'; ctx.font = '13px "Microsoft YaHei", sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(rName + '  ' + rData.checked + '/' + rData.total, 100, ry);
+    var rpct = rData.checked / rData.total;
+    ctx.fillStyle = 'rgba(255,255,255,0.08)'; roundRect(ctx, 260, ry - 11, 220, 14, 7); ctx.fill();
+    ctx.fillStyle = getCanvasColor(rName); roundRect(ctx, 260, ry - 11, 220 * rpct, 14, 7); ctx.fill();
+    ry += 36;
+  });
+
+  ctx.fillStyle = '#666'; ctx.font = '12px "Microsoft YaHei", sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('prison-museum-map | \u63a2\u7d22\u5386\u53f2\u7684\u6697\u89d2', w/2, h - 60);
+  var ftGrad = ctx.createLinearGradient(w/2-100, 0, w/2+100, 0);
+  ftGrad.addColorStop(0, 'rgba(74,158,255,0.5)'); ftGrad.addColorStop(0.5, 'rgba(255,215,0,0.5)'); ftGrad.addColorStop(1, 'rgba(81,207,102,0.5)');
+  ctx.fillStyle = ftGrad; ctx.fillRect(w/2-100, h-38, 200, 2);
 }
 
 
