@@ -53,7 +53,15 @@
   #sidebar {
     width: 300px;
     min-width: 260px;
-    background: #fff;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        transparent 11px,
+        rgba(0,0,0,0.03) 11px,
+        rgba(0,0,0,0.03) 13px
+      ),
+      #fff;
     display: flex;
     flex-direction: column;
     border-right: 1px solid #e0e0e0;
@@ -275,7 +283,18 @@
 
   /* ===== DARK MODE ===== */
   body.dark { background: #1a1a2e; color: #e0e0e0; }
-  body.dark #sidebar { background: #16213e; border-color: #2a2a4e; }
+  body.dark #sidebar {
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        transparent 11px,
+        rgba(255,255,255,0.03) 11px,
+        rgba(255,255,255,0.03) 13px
+      ),
+      #16213e;
+    border-color: #2a2a4e;
+  }
   body.dark #sidebar-header { background: #1a1a3e; border-color: #2a2a4e; }
   body.dark #sidebar-header h2 { color: #ccc; }
   body.dark #search-box { background: #1a1a3e; border-color: #3a3a5e; color: #e0e0e0; }
@@ -1389,26 +1408,30 @@ function createMarkerIcon(museum, forceChecked) {
   const isHotel = museum.type === 'hotel';
   const color = checked ? '#2f9e44' : (isHotel ? '#099268' : getColor(museum.region));
   const idText = String(museum.id);
-  const fontSize = idText.length > 2 ? 6 : (idText.length > 1 ? 7 : 8);
-  const size = checked ? 36 : 32;
-  // SVG 手铐图标
-  const darkColor = adjustBrightness(color, -20);
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="${size}" height="${size}" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">
-    <!-- 背景 -->
-    <circle cx="20" cy="20" r="19" fill="white" stroke="${darkColor}" stroke-width="1.5" opacity="0.95"/>
+  const fontSize = idText.length > 2 ? 7 : (idText.length > 1 ? 8 : 9);
+  const size = checked ? 36 : 34;
+  // 手铐 SVG - 简洁版
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="${size}" height="${size}">
+    <defs>
+      <filter id="hd${museum.id}" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#000" flood-opacity="0.35"/>
+      </filter>
+    </defs>
+    <!-- 白色底圆，地图上可见 -->
+    <circle cx="20" cy="20" r="18" fill="white" fill-opacity="0.92" filter="url(#hd${museum.id})"/>
     <!-- 左铐 -->
-    <circle cx="12" cy="21" r="8" fill="${checked ? color : 'white'}" stroke="${darkColor}" stroke-width="2.5"/>
-    ${checked ? '<circle cx="12" cy="18" r="2.5" fill="white"/>' : '<circle cx="12" cy="18" r="2" fill="' + darkColor + '"/>'}
-    ${checked ? '<path d="M8 25 L12 21 L16 25" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' : ''}
+    <ellipse cx="12.5" cy="20.5" rx="7.5" ry="8.5" fill="white" stroke="${color}" stroke-width="2.8"/>
+    <circle cx="12.5" cy="17" r="2" fill="${checked ? 'white' : color}"/>
+    ${checked ? '<path d="M9 25.5 L12.5 21.5 L16 25.5" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' : ''}
     <!-- 右铐 -->
-    <circle cx="28" cy="21" r="8" fill="${checked ? color : 'white'}" stroke="${darkColor}" stroke-width="2.5"/>
-    ${checked ? '<circle cx="28" cy="18" r="2.5" fill="white"/>' : '<circle cx="28" cy="18" r="2" fill="' + darkColor + '"/>'}
+    <ellipse cx="27.5" cy="20.5" rx="7.5" ry="8.5" fill="${checked ? color : 'white'}" stroke="${color}" stroke-width="2.8"/>
+    <circle cx="27.5" cy="17" r="2" fill="${checked ? 'white' : color}"/>
     <!-- 链条 -->
-    <rect x="19" y="15" width="2" height="4" rx="1" fill="${darkColor}"/>
-    <rect x="19" y="23" width="2" height="4" rx="1" fill="${darkColor}"/>
+    <rect x="19" y="16" width="2" height="3" rx="0.7" fill="${color}"/>
+    <rect x="19" y="22" width="2" height="3" rx="0.7" fill="${color}"/>
     <!-- 编号 -->
-    <text x="28" y="${checked ? 23.5 : 24}" text-anchor="middle" fill="${checked ? 'white' : darkColor}" font-size="${fontSize}" font-weight="800" font-family="Arial, sans-serif">${checked ? (isHotel ? 'H' : '✓') : idText}</text>
-    ${!checked ? '<text x="12" y="24" text-anchor="middle" fill="' + darkColor + '" font-size="' + (isHotel ? 7 : 6) + '" font-weight="700" font-family="Arial, sans-serif">' + (isHotel ? 'H' : '') + '</text>' : ''}
+    <text x="27.5" y="${checked ? 23 : 24}" text-anchor="middle" fill="${checked ? 'white' : color}" font-size="${fontSize}" font-weight="800" font-family="Arial,Helvetica,sans-serif">${checked ? (isHotel ? 'H' : '✓') : idText}</text>
+    ${!checked ? '<text x="12.5" y="24" text-anchor="middle" fill="' + color + '" font-size="6" font-weight="700" font-family="Arial,Helvetica,sans-serif">' + (isHotel ? 'H' : '') + '</text>' : ''}
   </svg>`;
   return L.divIcon({
     className: 'handcuff-marker',
@@ -1417,15 +1440,6 @@ function createMarkerIcon(museum, forceChecked) {
     iconAnchor: [size/2, size/2],
     popupAnchor: [0, -size/2]
   });
-}
-
-// 颜色变暗辅助函数
-function adjustBrightness(hex, amount) {
-  const num = parseInt(hex.slice(1), 16);
-  const r = Math.max(0, Math.min(255, (num >> 16) + amount));
-  const g = Math.max(0, Math.min(255, (num >> 8 & 0xFF) + amount));
-  const b = Math.max(0, Math.min(255, (num & 0xFF) + amount));
-  return '#' + (0x1000000 + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
 
 function updateMarker(id) {
