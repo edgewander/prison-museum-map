@@ -143,6 +143,64 @@
   /* ===== MAP ===== */
   #map { flex: 1; z-index: 0; }
 
+  /* ===== TIMELINE ===== */
+  #timeline-view {
+    display: none; flex: 1; overflow-y: auto; padding: 0 0 20px;
+    scroll-behavior: smooth;
+  }
+  #timeline-view.active { display: block; }
+  #timeline-view::-webkit-scrollbar { width: 4px; }
+  #timeline-view::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+  .tl-century {
+    position: relative; padding: 24px 16px 0 48px;
+  }
+  .tl-century-header {
+    font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 12px;
+    background: linear-gradient(135deg, #1a1a2e, #0f3460);
+    display: inline-block; padding: 4px 16px; border-radius: 20px;
+    position: relative; z-index: 2;
+  }
+  .tl-century-bar {
+    font-size: 11px; color: #999; margin-left: 8px; font-weight: 400;
+  }
+  .tl-line {
+    position: absolute; left: 32px; top: 56px; bottom: 0;
+    width: 2px; background: linear-gradient(180deg, #0f3460, #e0e0e0);
+  }
+  .tl-item {
+    position: relative; padding: 8px 12px 8px 20px; margin-bottom: 6px;
+    cursor: pointer; border-radius: 6px; transition: background 0.15s;
+    font-size: 13px; display: flex; align-items: center; gap: 10px;
+    border-left: 3px solid transparent;
+  }
+  .tl-item:hover { background: #f0f4ff; border-left-color: #0f3460; }
+  .tl-item.active-item { background: #e8f0fe; border-left-color: #0f3460; }
+  .tl-dot {
+    position: absolute; left: -6px; top: 50%; transform: translateY(-50%);
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #fff; border: 2px solid #0f3460; z-index: 1;
+  }
+  .tl-year {
+    min-width: 52px; font-weight: 700; font-size: 13px; color: #0f3460;
+    font-variant-numeric: tabular-nums; text-align: right; font-family: 'SF Mono','Consolas',monospace;
+  }
+  .tl-name { flex: 1; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tl-country { font-size: 10px; color: #999; flex-shrink: 0; background: #f5f5f5; padding: 1px 6px; border-radius: 3px; }
+  .tl-nodata {
+    text-align: center; color: #bbb; padding: 40px 16px; font-size: 13px;
+  }
+  .tl-nav {
+    position: sticky; top: 0; background: linear-gradient(180deg, #fff 70%, transparent);
+    padding: 8px 16px 4px; z-index: 10; display: flex; gap: 4px; flex-wrap: wrap;
+    border-bottom: 1px solid #eee;
+  }
+  .tl-nav-btn {
+    padding: 4px 10px; border-radius: 12px; border: 1px solid #ddd;
+    font-size: 11px; cursor: pointer; background: #fff; color: #666;
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .tl-nav-btn:hover, .tl-nav-btn.active { background: #0f3460; color: #fff; border-color: #0f3460; }
+
   /* ===== POPUP ===== */
   .museum-popup {
     min-width: 260px;
@@ -263,7 +321,9 @@
       <button class="view-btn active" id="btn-all" onclick="setView('all', this)">📍 全部</button>
       <button class="view-btn" id="btn-unchecked" onclick="setView('unchecked', this)">⭕ 未打卡</button>
       <button class="view-btn" id="btn-checked" onclick="setView('checked', this)">✅ 已打卡</button>
+      <button class="view-btn" id="btn-timeline" onclick="setView('timeline', this)">🕐 时间轴</button>
     </div>
+    <div id="timeline-view"><div class="tl-nodata">加载中…</div></div>
     <div id="museum-list"></div>
   </div>
   <div id="map"></div>
@@ -712,6 +772,108 @@ const MUSEUMS = [
 ];
 
 // ============================================================
+// YEAR DATA - 建造年代映射表（96条）
+// ============================================================
+const MUSEUM_YEARS = {
+  42:{y:1071,l:"1071"},
+  225:{y:1330,l:"1330"},
+  214:{y:1379,l:"1379"},
+  223:{y:1510,l:"1510"},
+  90:{y:1557,l:"1557"},
+  280:{y:1580,l:"1580"},
+  221:{y:1616,l:"1616"},
+  219:{y:1625,l:"1625"},
+  220:{y:1654,l:"1654"},
+  212:{y:1701,l:"1701"},
+  67:{y:1732,l:"1732"},
+  226:{y:1748,l:"1748"},
+  275:{y:1749,l:"1749"},
+  224:{y:1756,l:"1756"},
+  199:{y:1767,l:"1767"},
+  263:{y:1772,l:"1772"},
+  135:{y:1776,l:"1776"},
+  43:{y:1779,l:"1779"},
+  48:{y:1780,l:"1780"},
+  213:{y:1785,l:"1785"},
+  86:{y:1800,l:"18世纪"},
+  183:{y:1811,l:"1811"},
+  218:{y:1814,l:"1814"},
+  217:{y:1820,l:"1820"},
+  266:{y:1820,l:"1820"},
+  215:{y:1824,l:"1824"},
+  60:{y:1825,l:"1825"},
+  128:{y:1825,l:"1825"},
+  205:{y:1828,l:"1828"},
+  227:{y:1829,l:"1829"},
+  140:{y:1831,l:"1831"},
+  123:{y:1833,l:"1833"},
+  195:{y:1834,l:"1834"},
+  196:{y:1839,l:"1839"},
+  141:{y:1841,l:"1841"},
+  267:{y:1847,l:"1847"},
+  216:{y:1848,l:"1848"},
+  24:{y:1849,l:"1849"},
+  197:{y:1853,l:"1853"},
+  274:{y:1853,l:"1853"},
+  94:{y:1854,l:"1854"},
+  200:{y:1857,l:"1857"},
+  190:{y:1858,l:"1858"},
+  194:{y:1859,l:"1859"},
+  17:{y:1860,l:"1860"},
+  54:{y:1861,l:"1861"},
+  132:{y:1861,l:"1861"},
+  264:{y:1862,l:"1862"},
+  272:{y:1862,l:"1862"},
+  210:{y:1866,l:"1866-1965", ye:1965},
+  139:{y:1867,l:"1867"},
+  271:{y:1867,l:"1867"},
+  21:{y:1869,l:"1869"},
+  208:{y:1869,l:"1869"},
+  192:{y:1870,l:"1870"},
+  191:{y:1871,l:"1871"},
+  204:{y:1871,l:"1871"},
+  69:{y:1872,l:"1872"},
+  187:{y:1873,l:"1873"},
+  162:{y:1874,l:"1874"},
+  203:{y:1874,l:"1874"},
+  288:{y:1874,l:"1874"},
+  181:{y:1876,l:"1876"},
+  249:{y:1877,l:"1877"},
+  113:{y:1882,l:"1882"},
+  282:{y:1882,l:"1882"},
+  18:{y:1883,l:"1883"},
+  182:{y:1884,l:"1884"},
+  184:{y:1884,l:"1884"},
+  277:{y:1884,l:"1884"},
+  185:{y:1887,l:"1887"},
+  228:{y:1888,l:"1888"},
+  279:{y:1888,l:"1888"},
+  116:{y:1889,l:"1889"},
+  155:{y:1891,l:"1891"},
+  189:{y:1891,l:"1891"},
+  202:{y:1894,l:"1894"},
+  247:{y:1895,l:"1895"},
+  201:{y:1897,l:"1897"},
+  62:{y:1899,l:"1899"},
+  159:{y:1900,l:"1900-1976", ye:1976},
+  240:{y:1900,l:"19世纪"},
+  167:{y:1902,l:"1902"},
+  179:{y:1903,l:"1903"},
+  188:{y:1909,l:"1909"},
+  158:{y:1910,l:"1910"},
+  206:{y:1910,l:"1910"},
+  207:{y:1910,l:"1910"},
+  281:{y:1919,l:"1919"},
+  161:{y:1921,l:"1921"},
+  28:{y:1930,l:"1930"},
+  211:{y:1937,l:"1937-1989", ye:1989},
+  222:{y:1942,l:"1942"},
+  242:{y:1945,l:"1945"},
+  104:{y:1946,l:"1946"},
+  243:{y:1989,l:"1989"},
+};
+
+// ============================================================
 // STATE
 // ============================================================
 let currentRegion = '全部';
@@ -907,15 +1069,6 @@ function showPopup(museum) {
   highlightListItem(museum.id);
 }
 
-function highlightListItem(id) {
-  document.querySelectorAll('.museum-item').forEach(el => el.classList.remove('active-item'));
-  const el = document.getElementById('item-' + id);
-  if (el) {
-    el.classList.add('active-item');
-    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-}
-
 // ============================================================
 // STATS
 // ============================================================
@@ -984,25 +1137,114 @@ function flyToMuseum(id) {
 }
 
 // ============================================================
+// TIMELINE
+// ============================================================
+function getTimelineData() {
+  const museums = getFilteredMuseums();
+  return museums.filter(m => MUSEUM_YEARS[m.id]).sort((a, b) => {
+    const ya = MUSEUM_YEARS[a.id];
+    const yb = MUSEUM_YEARS[b.id];
+    return ya.y - yb.y;
+  });
+}
+
+function renderTimeline() {
+  const container = document.getElementById('timeline-view');
+  const data = getTimelineData();
+
+  if (data.length === 0) {
+    container.innerHTML = '<div class="tl-nodata">该区域暂无年代数据</div>';
+    return;
+  }
+
+  // Build century groups
+  const groups = {};
+  data.forEach(m => {
+    const yr = MUSEUM_YEARS[m.id];
+    let centNum;
+    if (yr.y < 1500) centNum = 0; // 中世纪
+    else centNum = Math.floor((yr.y - 1) / 100) + 1;
+    const key = centNum === 0 ? '中世纪' : centNum + '世纪';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(m);
+  });
+
+  // Century order
+  const order = Object.keys(groups).sort((a, b) => {
+    if (a === '中世纪') return -1;
+    if (b === '中世纪') return 1;
+    return parseInt(a) - parseInt(b);
+  });
+
+  // Build nav bar
+  const navBtns = order.map(c => {
+    const count = groups[c].length;
+    const id = c === '中世纪' ? 'medieval' : c.replace('世纪','');
+    return `<button class="tl-nav-btn" onclick="scrollToCentury('${id}')">${c} <span style="font-size:10px;opacity:0.7">${count}</span></button>`;
+  }).join('');
+
+  // Build century sections
+  const sections = order.map(c => {
+    const id = c === '中世纪' ? 'medieval' : c.replace('世纪','');
+    const mRange = c === '中世纪' ? '11—15世纪' : `${parseInt(c.replace('世纪',''))}世纪`;
+    const items = groups[c].map(m => {
+      const yr = MUSEUM_YEARS[m.id];
+      return `<div class="tl-item" id="item-${m.id}" onclick="flyToMuseum(${m.id})">
+        <div class="tl-dot"></div>
+        <div class="tl-year">${yr.l}</div>
+        <div class="tl-name">${m.name}</div>
+        <div class="tl-country">${m.country}</div>
+      </div>`;
+    }).join('');
+    return `<div class="tl-century" id="tl-cent-${id}">
+      <div class="tl-century-header">${c}<span class="tl-century-bar">${mRange} · ${groups[c].length}座</span></div>
+      <div class="tl-line"></div>
+      ${items}
+    </div>`;
+  }).join('');
+
+  container.innerHTML = `<div class="tl-nav">${navBtns}</div>${sections}`;
+}
+
+function scrollToCentury(id) {
+  const el = document.getElementById('tl-cent-' + id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function highlightListItem(id) {
+  document.querySelectorAll('.museum-item,.tl-item').forEach(el => el.classList.remove('active-item'));
+  const el = document.getElementById('item-' + id);
+  if (el) {
+    el.classList.add('active-item');
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+// ============================================================
 // FILTER
 // ============================================================
 function setRegion(region, btn) {
   currentRegion = region;
   document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  renderList();
+  if (currentView === 'timeline') renderTimeline();
+  else renderList();
 }
 
 function setView(view, btn) {
   currentView = view;
   document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  renderList();
+  document.getElementById('museum-list').style.display = (view === 'timeline') ? 'none' : '';
+  document.getElementById('timeline-view').style.display = (view === 'timeline') ? 'block' : 'none';
+  if (view === 'timeline') renderTimeline();
+  else renderList();
 }
 
 function filterList() {
   searchText = document.getElementById('search-box').value.trim();
-  renderList();
+  if (currentView === 'timeline') renderTimeline();
+  else renderList();
 }
 
 // ============================================================
