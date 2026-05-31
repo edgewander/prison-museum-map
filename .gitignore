@@ -1,0 +1,14 @@
+.codebuddy/
+.workbuddy/
+deploy_temp/
+miniprogram/
+node_modules/
+*.py
+*.bak
+*_backup.html
+*.json
+!manifest.json
+*.txt
+*.js
+!sw.js
+nul
