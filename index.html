@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>世界监狱博物馆旅行打卡地图</title>
+<title>世界监狱博物馆地图</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -142,7 +142,7 @@
   .item-num { font-size: 11px; color: #777; margin-right: 4px; }
 
   /* ===== MAIN CONTENT (right side) ===== */
-  #main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+  #main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; position: relative; }
   /* ===== MAP ===== */
   #map { height: 55%; min-height: 200px; flex-shrink: 0; z-index: 0; }
 
@@ -221,6 +221,45 @@
   }
   .popup-body::-webkit-scrollbar-thumb:hover { background: rgba(15,52,96,0.5); }
   .popup-body { scrollbar-width: thin; scrollbar-color: rgba(15,52,96,0.3) transparent; }
+
+  /* ===== FLOATING POPUP (独立浮层，不受地图 overflow 限制) ===== */
+  .floating-popup {
+    display: none; position: fixed; z-index: 99999;
+    pointer-events: auto;
+    max-width: 360px; min-width: 280px;
+  }
+  .floating-popup.show { display: block; }
+  .floating-popup-inner {
+    background: #fff; border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2);
+    overflow: hidden;
+    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  }
+  .floating-popup-arrow {
+    width: 14px; height: 14px; background: #fff;
+    position: absolute; left: 30px; bottom: -7px;
+    transform: rotate(45deg);
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.15);
+  }
+  .floating-popup-arrow.arrow-top {
+    top: -7px; bottom: auto;
+    box-shadow: -2px -2px 6px rgba(0,0,0,0.12);
+  }
+  .floating-popup .popup-header {
+    margin: 0; border-radius: 0; padding: 12px 16px;
+  }
+  .floating-popup .popup-image-wrap { margin: 0; }
+  .floating-popup .popup-body { padding: 12px 16px; max-height: 200px; }
+  .floating-popup .popup-check-btn { margin: 0 16px 12px; width: calc(100% - 32px); }
+  .floating-popup .popup-share-btn { margin: 0 16px 12px; width: calc(100% - 32px); }
+  .floating-popup-close {
+    position: absolute; top: 8px; right: 12px; z-index: 10;
+    width: 28px; height: 28px; border-radius: 50%;
+    border: none; background: rgba(0,0,0,0.5); color: #fff;
+    font-size: 16px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .floating-popup-close:hover { background: rgba(0,0,0,0.75); }
 
   /* ===== SHARE MODAL ===== */
   #share-overlay {
@@ -565,8 +604,8 @@
   <div class="title-wrap">
     <span class="title-icon">🏛️</span>
     <div>
-      <h1>世界监狱博物馆旅行打卡地图</h1>
-      <div class="subtitle">探索历史的暗角，记录每一次打卡之旅</div>
+      <h1>世界监狱博物馆地图</h1>
+      <div class="subtitle">探索历史的暗角，品味自由与救赎</div>
     </div>
   </div>
   <div id="stats-bar" onclick="showStats()" title="点击查看打卡统计详情">
@@ -611,6 +650,10 @@
   </div>
   <div id="main-content">
     <div id="map"></div>
+    <div class="floating-popup" id="floating-popup">
+      <div class="floating-popup-inner"></div>
+      <div class="floating-popup-arrow"></div>
+    </div>
     <div id="bottom-panel">
       <div class="panel-col" id="panel-events">
         <div class="panel-header"><span class="panel-header-icon">📅</span> 日历</div>
@@ -1140,53 +1183,135 @@ function initMap() {
     marker.addTo(map);
     markers[m.id] = marker;
   });
+
+  initFloatingPopup();
+  setupMapClickClose();
 }
 
 // ============================================================
-// POPUP
+// FLOATING POPUP (independent overlay, not clipped by map)
 // ============================================================
+var floatingPopup = null;
+var floatingInner = null;
+var floatingVisible = false;
+
+function initFloatingPopup() {
+  floatingPopup = document.getElementById('floating-popup');
+  floatingInner = floatingPopup.querySelector('.floating-popup-inner');
+  // Close button
+  var closeBtn = document.createElement('button');
+  closeBtn.className = 'floating-popup-close';
+  closeBtn.innerHTML = '✕';
+  closeBtn.onclick = function(e) { e.stopPropagation(); hideFloatingPopup(); };
+  floatingPopup.appendChild(closeBtn);
+}
+
 function showPopup(museum) {
   activeMarkerId = museum.id;
-  const checked = checkedSet.has(museum.id);
-  const color = getColor(museum.region);
-  const websiteHtml = museum.website
-    ? `<div class="popup-info-row"><span class="popup-info-icon">🌐</span><a class="popup-website" href="${museum.website}" target="_blank">${museum.website}</a></div>`
+  var marker = markers[museum.id];
+  if (!marker) return;
+
+  var checked = checkedSet.has(museum.id);
+  var color = getColor(museum.region);
+  var websiteHtml = museum.website
+    ? '<div class="popup-info-row"><span class="popup-info-icon">🌐</span><a class="popup-website" href="' + museum.website + '" target="_blank">' + museum.website + '</a></div>'
     : '';
-  const ticketHtml = museum.ticket
-    ? `<div class="popup-info-row"><span class="popup-info-icon">🎫</span><span class="popup-info-text">${museum.ticket}</span></div>` : '';
-  const hoursHtml = museum.hours
-    ? `<div class="popup-info-row"><span class="popup-info-icon">🕐</span><span class="popup-info-text">${museum.hours}</span></div>` : '';
-  const addrHtml = museum.address
-    ? `<div class="popup-info-row"><span class="popup-info-icon">📍</span><span class="popup-info-text">${museum.address}</span></div>` : '';
-  const imageHtml = museum.image
-    ? `<div class="popup-image-wrap"><img src="${museum.image}" alt="${museum.name}" onerror="this.parentElement.style.display='none'"></div>` : '';
+  var ticketHtml = museum.ticket
+    ? '<div class="popup-info-row"><span class="popup-info-icon">🎫</span><span class="popup-info-text">' + museum.ticket + '</span></div>' : '';
+  var hoursHtml = museum.hours
+    ? '<div class="popup-info-row"><span class="popup-info-icon">🕐</span><span class="popup-info-text">' + museum.hours + '</span></div>' : '';
+  var addrHtml = museum.address
+    ? '<div class="popup-info-row"><span class="popup-info-icon">📍</span><span class="popup-info-text">' + museum.address + '</span></div>' : '';
+  var imageHtml = museum.image
+    ? '<div class="popup-image-wrap"><img src="' + museum.image + '" alt="' + museum.name + '" onerror="this.parentElement.style.display=\'none\'"></div>' : '';
 
-  const content = `<div class="museum-popup">
-    <div class="popup-header" style="background:linear-gradient(135deg,#1a1a2e,${color})">
-      <div class="popup-num"># ${museum.id}</div>
-      <div class="popup-name">${museum.name}</div>
-      <div class="popup-region">🗺 ${museum.region} · ${museum.country}</div>
-    </div>
-    ${imageHtml}
-    <div class="popup-body">
-      <div class="popup-desc">${museum.desc || ''}</div>
-      ${addrHtml}${ticketHtml}${hoursHtml}${websiteHtml}
-    </div>
-    <button class="popup-check-btn ${checked ? 'checked' : ''}" data-id="${museum.id}"
-      onclick="toggleCheck(${museum.id})">
-      ${checked ? '✅ 已打卡！' : '📍 标记为已打卡'}
-    </button>
-    ${checked ? '<button class="popup-share-btn" data-id="'+museum.id+'" onclick="showShareCard('+museum.id+');event.stopPropagation()">📤 分享打卡</button>' : ''}
-  </div>`;
+  var content = '<div class="popup-header" style="background:linear-gradient(135deg,#1a1a2e,' + color + ')">' +
+    '<div class="popup-num"># ' + museum.id + '</div>' +
+    '<div class="popup-name">' + museum.name + '</div>' +
+    '<div class="popup-region">🗺 ' + museum.region + ' · ' + museum.country + '</div>' +
+    '</div>' +
+    imageHtml +
+    '<div class="popup-body">' +
+    '<div class="popup-desc">' + (museum.desc || '') + '</div>' +
+    addrHtml + ticketHtml + hoursHtml + websiteHtml +
+    '</div>' +
+    '<button class="popup-check-btn ' + (checked ? 'checked' : '') + '" data-id="' + museum.id + '" onclick="toggleCheck(' + museum.id + ')">' +
+    (checked ? '✅ 已打卡！' : '📍 标记为已打卡') +
+    '</button>' +
+    (checked ? '<button class="popup-share-btn" data-id="' + museum.id + '" onclick="showShareCard(' + museum.id + ');event.stopPropagation()">📤 分享打卡</button>' : '');
 
-  markers[museum.id].bindPopup(content, {
-    maxWidth: 360, minWidth: 260,
-    className: 'custom-popup'
-  }).openPopup();
+  floatingInner.innerHTML = content;
+  positionFloatingPopup(marker);
+  floatingPopup.classList.add('show');
+  floatingVisible = true;
 
-  // Scroll list item
   highlightListItem(museum.id);
 }
+
+function positionFloatingPopup(marker) {
+  var mapEl = document.getElementById('map');
+  var mapRect = mapEl.getBoundingClientRect();
+  var point = map.latLngToContainerPoint(marker.getLatLng());
+  var popupW = 340;
+
+  // Position popup horizontally: centered on marker, clamped within map
+  var left = mapRect.left + point.x - popupW / 2;
+  if (left < mapRect.left + 10) left = mapRect.left + 10;
+  if (left + popupW > mapRect.right - 10) left = mapRect.right - popupW - 10;
+
+  // Vertical: above or below marker depending on available space
+  var markerScreenY = mapRect.top + point.y;
+  var aboveSpace = markerScreenY - 20;
+  var belowSpace = window.innerHeight - markerScreenY - 20;
+  var popupH = floatingPopup.offsetHeight || 300;
+  var arrow = floatingPopup.querySelector('.floating-popup-arrow');
+
+  if (aboveSpace > popupH + 30 || aboveSpace > belowSpace) {
+    // Show above marker
+    floatingPopup.style.top = (markerScreenY - popupH - 18) + 'px';
+    floatingPopup.style.left = left + 'px';
+    floatingPopup.style.bottom = 'auto';
+    arrow.className = 'floating-popup-arrow'; // bottom arrow (default)
+    arrow.style.left = (point.x - left) + 'px';
+    arrow.style.bottom = '-7px'; arrow.style.top = 'auto';
+  } else {
+    // Show below marker
+    floatingPopup.style.top = (markerScreenY + 24) + 'px';
+    floatingPopup.style.left = left + 'px';
+    floatingPopup.style.bottom = 'auto';
+    arrow.className = 'floating-popup-arrow arrow-top';
+    arrow.style.left = (point.x - left) + 'px';
+    arrow.style.top = '-7px'; arrow.style.bottom = 'auto';
+  }
+}
+
+function hideFloatingPopup() {
+  floatingPopup.classList.remove('show');
+  floatingVisible = false;
+  activeMarkerId = null;
+}
+
+// Close popup when clicking on map
+function setupMapClickClose() {
+  map.on('click', function(e) {
+    if (floatingVisible) hideFloatingPopup();
+  });
+  map.on('movestart', function() {
+    if (floatingVisible) hideFloatingPopup();
+  });
+}
+
+// Close popup when clicking outside
+document.addEventListener('click', function(e) {
+  if (!floatingVisible) return;
+  if (floatingPopup.contains(e.target)) return;
+  // Don't close if clicking a marker (showPopup handles that)
+  var markerClicked = false;
+  for (var k in markers) {
+    if (markers[k]._icon && markers[k]._icon.contains(e.target)) { markerClicked = true; break; }
+  }
+  if (!markerClicked) hideFloatingPopup();
+});
 
 
 
@@ -1362,13 +1487,17 @@ function renderEventsView() {
 function flyToEvent(lat, lng) {
   if (typeof map === 'undefined') return;
   map.flyTo([lat, lng], 12, { duration: 1.2 });
+  // Find nearest museum and show its popup after fly
   setTimeout(function() {
-    map.eachLayer(function(layer) {
-      if (layer._popup && layer._latlng) {
-        var d = map.distance([lat, lng], layer._latlng);
-        if (d < 50000) layer.openPopup();
-      }
-    });
+    var nearest = null, nearestDist = Infinity;
+    for (var k in markers) {
+      var d = map.distance([lat, lng], markers[k].getLatLng());
+      if (d < nearestDist) { nearestDist = d; nearest = k; }
+    }
+    if (nearest && nearestDist < 50000) {
+      var m = MUSEUMS.find(function(x) { return x.id == nearest; });
+      if (m) showPopup(m);
+    }
   }, 1400);
 }
 
@@ -1870,7 +1999,7 @@ window.onload = function() {
 <!-- ===== SHARE MODAL (single museum) ===== -->
 <div id="share-overlay" onclick="closeShareModal(event)">
   <div id="share-card">
-    <div class="sc-header"><span>⛓️</span> 世界监狱博物馆打卡地图</div>
+    <div class="sc-header"><span>⛓️</span> 世界监狱博物馆地图</div>
     <div class="sc-divider"></div>
     <div class="sc-icon">🏛️</div>
     <div class="sc-name" id="sc-name"></div>
@@ -1883,7 +2012,7 @@ window.onload = function() {
     <div class="sc-divider"></div>
     <div class="sc-footer">
       探索全球 <span class="url">map.prison-art.cn</span><br>
-      <small>世界监狱博物馆旅行打卡地图</small>
+      <small>世界监狱博物馆地图</small>
     </div>
     <div class="sc-stamp" id="sc-stamp"></div>
   </div>
