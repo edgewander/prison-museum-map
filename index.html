@@ -512,11 +512,81 @@
     display: none;
   }
 
-  /* Responsive */
+  /* ===== HAMBURGER BUTTON (mobile only) ===== */
+  #hamburger-btn {
+    display: none;
+    background: none;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+    margin-left: 8px;
+  }
+  #hamburger-btn:hover { background: rgba(255,255,255,0.1); }
+
+  /* ===== SIDEBAR OVERLAY / SCRIM ===== */
+  #sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 998;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  #sidebar-overlay.active { display: block; opacity: 1; }
+
+  /* ===== DRAWER CLOSE BUTTON (mobile only) ===== */
+  #drawer-close-btn {
+    display: none;
+    position: absolute;
+    top: 10px; right: 10px;
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: #fff;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background 0.15s;
+  }
+  #drawer-close-btn:hover { background: rgba(255,255,255,0.22); }
+
+  /* ===== RESPONSIVE ===== */
   @media (max-width: 768px) {
-    #sidebar { width: 240px; min-width: 200px; }
-    #header h1 { font-size: 16px; }
-    .stat-num { font-size: 16px; }
+    #hamburger-btn { display: flex; }
+    #header h1 { font-size: 15px; }
+    #header .subtitle { display: none; }
+    .stat-num { font-size: 15px; }
+    #progress-text { display: none; }
+
+    /* Sidebar becomes a fixed drawer */
+    #sidebar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: 300px !important;
+      min-width: unset !important;
+      z-index: 999;
+      transform: translateX(-100%);
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+    }
+    #sidebar.drawer-open { transform: translateX(0); }
+
+    /* Map fills full width */
+    #app { height: calc(100vh - 56px); }
+
+    /* Show close button inside drawer */
+    #drawer-close-btn { display: flex; }
   }
 
   /* ===== EVENTS CALENDAR ===== */
@@ -619,10 +689,15 @@
     </div>
     <div id="progress-text">开始你的旅程吧！</div>
   </div>
+  <button id="hamburger-btn" onclick="openDrawer()" title="打开列表">☰</button>
 </div>
+
+<!-- 移动端抽屉遮罩 -->
+<div id="sidebar-overlay" onclick="closeDrawer()"></div>
 
 <div id="app">
   <div id="sidebar">
+    <button id="drawer-close-btn" onclick="closeDrawer()" title="关闭">✕</button>
     <div id="sidebar-header">
       <h2>🔍 博物馆列表</h2>
       <input type="text" id="search-box" placeholder="搜索名称、城市、国家…" oninput="filterList()">
@@ -1816,9 +1891,33 @@ function renderTimeline() {
 // ============================================================
 // MAP FLY
 // ============================================================
+// ============================================================
+// 移动端抽屉侧边栏
+// ============================================================
+function openDrawer() {
+  document.getElementById('sidebar').classList.add('drawer-open');
+  const overlay = document.getElementById('sidebar-overlay');
+  overlay.style.display = 'block';
+  requestAnimationFrame(() => overlay.classList.add('active'));
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer() {
+  document.getElementById('sidebar').classList.remove('drawer-open');
+  const overlay = document.getElementById('sidebar-overlay');
+  overlay.classList.remove('active');
+  setTimeout(() => { overlay.style.display = 'none'; }, 260);
+  document.body.style.overflow = '';
+}
+
+function autoCloseDrawer() {
+  if (window.innerWidth <= 768) closeDrawer();
+}
+
 function flyToMuseum(id) {
   const museum = MUSEUMS.find(m => m.id === id);
   if (!museum) return;
+  autoCloseDrawer();
   map.flyTo([museum.lat, museum.lng], 16, { duration: 1.2 });
   setTimeout(() => showPopup(museum), 800);
 }
