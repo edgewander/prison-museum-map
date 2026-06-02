@@ -1226,28 +1226,28 @@ function initMap() {
     zoomControl: true,
   });
 
-  // 高德地图瓦片（国内访问流畅）
-  const amapLayer = L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
-    subdomains: ['1','2','3','4'],
-    attribution: '© 高德地图 | © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    maxZoom: 18,
-  });
-
-  // 备用：CartoDB Voyager（国际可用）
-  const cartoLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  // CartoDB Dark Matter 暗黑底图（深灰陆地 + 暗色海洋 + 白色标签）
+  const cartoDarkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     subdomains: ['a','b','c','d'],
-    attribution: '© <a href="https://carto.com/">CARTO</a> | © <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+    attribution: '\u00a9 <a href="https://carto.com/">CARTO</a> | \u00a9 <a href="https://www.openstreetmap.org/copyright">OSM</a>',
     maxZoom: 19,
   });
 
-  amapLayer.addTo(map);
+  // 备用：高德地图（国内访问流畅）
+  const amapLayer = L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
+    subdomains: ['1','2','3','4'],
+    attribution: '\u00a9 \u9ad8\u5fb7\u5730\u56fe | \u00a9 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 18,
+  });
 
-  // 如果高德加载失败，自动切换到备用源
-  amapLayer.on('tileerror', function() {
-    if (!window._cartoFallback) {
-      window._cartoFallback = true;
-      map.removeLayer(amapLayer);
-      cartoLayer.addTo(map);
+  cartoDarkLayer.addTo(map);
+
+  // CartoDB 国外 CDN 国内可能慢，加载失败自动切高德
+  cartoDarkLayer.on('tileerror', function() {
+    if (!window._amapFallback) {
+      window._amapFallback = true;
+      map.removeLayer(cartoDarkLayer);
+      amapLayer.addTo(map);
     }
   });
 
