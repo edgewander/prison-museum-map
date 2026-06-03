@@ -774,7 +774,7 @@
         </div>
         <div class="panel-sub" id="panel-travel">
           <div class="panel-header"><span class="panel-header-icon">✏️</span> 游记</div>
-          <div class="panel-body"><div id="travel-notes"></div></div>
+          <div class="panel-body"><div id="travel-view"></div></div>
         </div>
       </div>
       <div class="panel-col" id="panel-giscus">
@@ -1494,6 +1494,14 @@ const historyArticles = [
 ];
 
 // ============================================================
+// TRAVEL ARTICLES (游记)
+// ============================================================
+const travelArticles = [
+  // 游记文章将在这里添加
+  // 格式：{ id: 1, title: '标题', date: '2024-06-04', content: '...' }
+];
+
+// ============================================================
 const ROUTES = [
   {id:"gulag", name:"苏联古拉格之路", icon:"❄️", days:"14-18天", subtitle:"从索洛韦茨基到科雷马", countries:"俄罗斯", theme:"古拉格并非一个集中营，而是一套遍布苏联全境的劳改体系。从白海到太平洋，囚犯用生命铺就了铁路和运河。",
    stops:[
@@ -1738,22 +1746,46 @@ function flyToRouteStop(lat, lng) {
 }
 
 // ============================================================
-// TRAVEL NOTES (empty - waiting for user content)
+// TRAVEL (游记)
 // ============================================================
-var travelNotesData = {};
-function loadTravelNotes() {
-  try { travelNotesData = JSON.parse(localStorage.getItem('prison_travel_notes') || '{}'); } catch(e) { travelNotesData = {}; }
-}
-function renderTravelNotes() {
-  var container = document.getElementById('travel-notes');
+function renderTravelView() {
+  var container = document.getElementById('travel-view');
   if (!container) return;
-  container.innerHTML = '<div class="tn-empty"><span class="tn-empty-icon">📝</span>游记<br><small style="color:#555;">即将上线，敬请期待</small></div>';
+
+  if (travelArticles.length === 0) {
+    container.innerHTML = '<div class="tn-empty"><span class="tn-empty-icon">📝</span>游记<br><small style="color:#555;">游记文章，即将上线</small></div>';
+    return;
+  }
+
+  container.innerHTML = travelArticles.map(a => `
+    <div class="ha-card" onclick="showTravelArticle(${a.id})">
+      <div class="ha-card-title">${a.title}</div>
+    </div>
+  `).join('');
 }
-function saveTravelNote(mid) {
-  var input = document.getElementById('tn-input-' + mid);
-  if (!input) return;
-  travelNotesData[mid] = { note: input.value.trim(), updatedAt: new Date().toISOString() };
-  try { localStorage.setItem('prison_travel_notes', JSON.stringify(travelNotesData)); } catch(e) {}
+
+function showTravelArticle(id) {
+  var article = travelArticles.find(a => a.id === id);
+  if (!article) return;
+
+  var container = document.getElementById('travel-view');
+  if (!container) return;
+
+  var html = article.content;
+  html = html.replace(/\{IMAGE:(\d+):([^}]+)\}/g, function(match, num, desc) {
+    return '<div class="ha-img-placeholder">📷 图片' + num + '：' + desc + '（待上传）</div>';
+  });
+
+  container.innerHTML = '<div class="hc-back" onclick="closeTravelArticle()">← 返回列表</div>'
+    + '<div class="ha-detail">' + html + '</div>'
+    + '<div class="hc-back" onclick="closeTravelArticle()" style="margin-top:12px;">← 返回列表</div>';
+
+  var panelBody = container.closest('.panel-body');
+  if (panelBody) panelBody.scrollTop = 0;
+}
+
+function closeTravelArticle() {
+  renderTravelView();
 }
 // ============================================================
 // HISTORY (钩沉述往)
@@ -2210,8 +2242,7 @@ window.onload = function() {
   renderList();
   renderEventsView();
   renderRoutesView();
-  loadTravelNotes();
-  renderTravelNotes();
+  renderTravelView();
   renderHistoryView();
 };
 
