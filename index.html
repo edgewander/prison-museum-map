@@ -819,8 +819,7 @@
       <button class="view-btn active" id="btn-all" onclick="setView('all', this)">📍 全部</button>
       <button class="view-btn" id="btn-unchecked" onclick="setView('unchecked', this)">⭕ 未打卡</button>
       <button class="view-btn" id="btn-checked" onclick="setView('checked', this)">✅ 已打卡</button>
-      <button class="view-btn" id="btn-timeline" onclick="setView('timeline', this)">⏳ 时代轴</button>
-      <button class="view-btn" id="btn-yearline" onclick="setView('yearline', this)">📅 年份轴</button>
+      <button class="view-btn" id="btn-timeline" onclick="setView('timeline', this)">⏳ 时间轴</button>
     </div>
     <div id="museum-list"></div>
   </div>
@@ -1971,10 +1970,6 @@ function renderList() {
     renderTimeline();
     return;
   }
-  if (currentView === 'yearline') {
-    renderYearline();
-    return;
-  }
   const list = document.getElementById('museum-list');
   const filtered = getFilteredMuseums();
   if (filtered.length === 0) {
@@ -1999,152 +1994,7 @@ function renderList() {
 // ============================================================
 // TIMELINE
 // ============================================================
-  /* ===== PRECISE YEAR TIMELINE ===== */
-  #yearline-container {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    background: #080818;
-  }
-  #yearline-scroll {
-    flex: 1;
-    overflow-x: auto;
-    overflow-y: hidden;
-    position: relative;
-    cursor: grab;
-    user-select: none;
-  }
-  #yearline-scroll:active { cursor: grabbing; }
-  #yearline-inner {
-    position: relative;
-    height: 100%;
-    min-height: 320px;
-  }
-  #yearline-axis {
-    position: absolute;
-    bottom: 60px;
-    left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #1a3a6e 5%, #2a4a8e 50%, #1a3a6e 95%, transparent);
-  }
-  .yl-tick {
-    position: absolute;
-    bottom: 56px;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .yl-tick-line {
-    width: 1px;
-    height: 8px;
-    background: #2a4a8e;
-  }
-  .yl-tick-label {
-    position: absolute;
-    bottom: -18px;
-    font-size: 10px;
-    color: #555;
-    white-space: nowrap;
-    font-family: monospace;
-  }
-  .yl-node {
-    position: absolute;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    z-index: 2;
-  }
-  .yl-node-stem {
-    width: 1px;
-    background: #2a4a6e;
-    flex-shrink: 0;
-  }
-  .yl-node-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    border: 2px solid;
-    background: #080818;
-    flex-shrink: 0;
-    transition: transform 0.15s, box-shadow 0.15s;
-    position: absolute;
-    bottom: 62px;
-    transform: translateX(-50%);
-    left: 50%;
-  }
-  .yl-node:hover .yl-node-dot {
-    transform: translateX(-50%) scale(1.5);
-    box-shadow: 0 0 8px currentColor;
-  }
-  .yl-node-card {
-    position: absolute;
-    bottom: 75px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #0f0f2a;
-    border: 1px solid #2a2a5e;
-    border-radius: 4px;
-    padding: 6px 10px;
-    min-width: 100px;
-    max-width: 160px;
-    text-align: center;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.15s;
-    z-index: 10;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .yl-node:hover .yl-node-card { opacity: 1; }
-  .yl-card-year { font-size: 10px; color: #ffd700; font-family: monospace; margin-bottom: 2px; }
-  .yl-card-name { font-size: 11px; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .yl-card-country { font-size: 10px; color: #888; margin-top: 2px; }
-  #yearline-scrubber {
-    height: 32px;
-    background: #050510;
-    border-top: 1px solid #1a1a3e;
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-    gap: 8px;
-    flex-shrink: 0;
-  }
-  #yearline-range {
-    flex: 1;
-    accent-color: #ffd700;
-  }
-  .yl-range-label { font-size: 10px; color: #555; font-family: monospace; white-space: nowrap; }
-  #yearline-count { font-size: 10px; color: #94d82d; font-family: monospace; white-space: nowrap; }
-
-const MUSEUM_YEARS = {
-  3: 1942, 5: 1950, 6: 2000, 9: 1568, 10: 1400, 12: 1905, 13: 1906,
-  14: 1939, 15: 1943, 17: 1941, 18: 1938, 19: 1854, 24: 1985, 26: 1613,
-  28: 1000, 29: 1989, 30: 1875, 31: 1945, 33: 2005, 34: 1951, 35: 1980,
-  37: 1965, 38: 1877, 41: 1917, 42: 1942, 45: 2008, 48: 1657, 49: 1571,
-  50: 1916, 51: 1911, 52: 1869, 54: 1949, 55: 1895, 56: 1860, 57: 1883,
-  58: 1849, 60: 2016, 67: 1959, 72: 1930, 74: 1919, 76: 1991, 77: 1920,
-  79: 1853, 80: 1889, 83: 1948, 85: 1931, 87: 1930, 91: 1397, 94: 1946,
-  97: 1854, 98: 1910, 99: 1872, 102: 1938, 105: 1945, 107: 1945, 109: 1961,
-  110: 1933, 117: 1997, 118: 1890, 120: 1882, 123: 1825, 127: 1861, 128: 1540,
-  129: 1853, 132: 1943, 138: 1796, 139: 1830, 141: 1732, 144: 1882, 150: 1888,
-  151: 1616, 153: 1820, 154: 1330, 155: 1510, 156: 1942, 157: 2011, 158: 1701,
-  159: 1780, 161: 1829, 163: 1848, 165: 1654, 166: 1071, 168: 1756, 170: 1824,
-  171: 1785, 172: 1748, 173: 1071, 174: 1847, 178: 1892, 179: 1379, 180: 1625,
-  182: 1779, 184: 1580, 186: 1921, 189: 1899, 192: 1863, 193: 1557, 195: 1946,
-  198: 1776, 201: 2021, 203: 1831, 204: 1862, 206: 1841, 207: 1867, 208: 1926,
-  210: 1921, 211: 1942, 212: 1884, 213: 1853, 214: 1897, 215: 1811, 217: 1834,
-  218: 1857, 219: 1851, 220: 1972, 222: 1871, 224: 1828, 225: 1858, 226: 1772,
-  227: 1871, 228: 1861, 229: 1870, 230: 1869, 232: 1839, 235: 1859, 236: 1894,
-  237: 1910, 238: 1836, 240: 2023, 242: 1873, 243: 1910, 244: 1858, 245: 1874,
-  247: 1767, 248: 1991, 249: 1876, 250: 1998, 251: 1909, 255: 1910, 256: 1887,
-  257: 1891, 258: 1891, 259: 1884, 260: 1874, 261: 1960, 263: 1807, 265: 1983,
-  266: 1902, 268: 1861, 270: 1867, 275: 1847, 281: 1817, 283: 1833, 284: 1825,
-};
+const TIMELINE_PERIODS = [
   { key:'ancient', label:'🏛 古代与中世纪', range:'—1500', desc:'早期的监禁场所与地牢', order:1 },
   { key:'colonial', label:'⛵ 殖民时代到监狱近代化改革前', range:'1500–1770', desc:'殖民扩张中的监狱体系', order:2 },
   { key:'c19', label:'🏭 监狱近代化改革后', range:'1770–1900', desc:'工业革命与监狱改革', order:3 },
@@ -2321,123 +2171,6 @@ function closeDrawer() {
 
 function autoCloseDrawer() {
   if (window.innerWidth <= 768) closeDrawer();
-}
-
-// ============================================================
-// PRECISE YEAR TIMELINE
-// ============================================================
-function renderYearline() {
-  const list = document.getElementById('museum-list');
-  const museums = MUSEUMS.filter(m => MUSEUM_YEARS[m.id]);
-
-  if (museums.length === 0) {
-    list.innerHTML = '<div style="text-align:center;color:#aaa;padding:30px;font-size:13px;">暂无年份数据</div>';
-    return;
-  }
-
-  const years = museums.map(m => MUSEUM_YEARS[m.id]);
-  const minY = Math.min(...years);
-  const maxY = Math.max(...years);
-  const range = maxY - minY;
-  const PX_PER_YEAR = 8;
-  const totalW = range * PX_PER_YEAR + 200;
-  const AXIS_H = 60; // from bottom
-
-  // Period colors
-  const periodColors = {
-    ancient: '#9b59b6', colonial: '#e67e22', c19: '#3498db',
-    early20: '#27ae60', ww2: '#e74c3c', coldwar: '#1abc9c',
-    modern: '#f39c12', unknown: '#7f8c8d'
-  };
-
-  // Build nodes - alternate up/down to avoid overlap
-  const sorted = [...museums].sort((a, b) => MUSEUM_YEARS[a.id] - MUSEUM_YEARS[b.id]);
-
-  // Group by decade to stagger
-  const buckets = {};
-  sorted.forEach(m => {
-    const decade = Math.floor(MUSEUM_YEARS[m.id] / 10) * 10;
-    if (!buckets[decade]) buckets[decade] = [];
-    buckets[decade].push(m);
-  });
-
-  let nodesHtml = '';
-  const containerH = 320;
-
-  Object.entries(buckets).forEach(([decade, ms]) => {
-    ms.forEach((m, i) => {
-      const year = MUSEUM_YEARS[m.id];
-      const x = ((year - minY) * PX_PER_YEAR) + 100;
-      const period = getMuseumPeriod(m);
-      const color = periodColors[period] || '#7f8c8d';
-      const isAbove = i % 2 === 0;
-      const stemH = 30 + (Math.floor(i / 2) * 22);
-      const nodeTop = isAbove
-        ? (containerH - AXIS_H - stemH - 12)
-        : (containerH - AXIS_H + 8);
-
-      nodesHtml += `<div class="yl-node" style="left:${x}px;top:0;height:${containerH}px;" onclick="flyToMuseum(${m.id})">
-        <div class="yl-node-dot" style="border-color:${color};bottom:${isAbove ? AXIS_H + stemH - 5 : AXIS_H - 5}px;"></div>
-        <div class="yl-node-stem" style="position:absolute;bottom:${AXIS_H}px;height:${stemH}px;left:50%;"></div>
-        <div class="yl-node-card" style="bottom:${isAbove ? AXIS_H + stemH + 8 : 'auto'};top:${isAbove ? 'auto' : (containerH - AXIS_H + stemH + 8) + 'px'};">
-          <div class="yl-card-year">${year}</div>
-          <div class="yl-card-name">${m.name}</div>
-          <div class="yl-card-country">${m.country||''}</div>
-        </div>
-      </div>`;
-    });
-  });
-
-  // Tick marks every 50 years
-  let ticksHtml = '';
-  const tickStart = Math.ceil(minY / 50) * 50;
-  for (let y = tickStart; y <= maxY; y += 50) {
-    const x = ((y - minY) * PX_PER_YEAR) + 100;
-    ticksHtml += `<div class="yl-tick" style="left:${x}px;">
-      <div class="yl-tick-line"></div>
-      <div class="yl-tick-label">${y}</div>
-    </div>`;
-  }
-
-  list.innerHTML = `<div id="yearline-container">
-    <div id="yearline-scroll">
-      <div id="yearline-inner" style="width:${totalW}px;height:${containerH}px;position:relative;">
-        <div id="yearline-axis"></div>
-        ${ticksHtml}
-        ${nodesHtml}
-      </div>
-    </div>
-    <div id="yearline-scrubber">
-      <span class="yl-range-label">${minY}</span>
-      <input type="range" id="yearline-range" min="${minY}" max="${maxY}" value="${minY}" step="10">
-      <span class="yl-range-label">${maxY}</span>
-      <span id="yearline-count">${museums.length} 座有年份记录</span>
-    </div>
-  </div>`;
-
-  // Drag to scroll
-  const scrollEl = document.getElementById('yearline-scroll');
-  let isDragging = false, startX, scrollLeft;
-  scrollEl.addEventListener('mousedown', e => {
-    isDragging = true;
-    startX = e.pageX - scrollEl.offsetLeft;
-    scrollLeft = scrollEl.scrollLeft;
-  });
-  scrollEl.addEventListener('mousemove', e => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const x = e.pageX - scrollEl.offsetLeft;
-    scrollEl.scrollLeft = scrollLeft - (x - startX);
-  });
-  scrollEl.addEventListener('mouseup', () => isDragging = false);
-  scrollEl.addEventListener('mouseleave', () => isDragging = false);
-
-  // Range scrubber scrolls the view
-  document.getElementById('yearline-range').addEventListener('input', function() {
-    const y = parseInt(this.value);
-    const x = ((y - minY) * PX_PER_YEAR) + 100 - scrollEl.clientWidth / 2;
-    scrollEl.scrollLeft = Math.max(0, x);
-  });
 }
 
 function scrollToEra(eraId) {
