@@ -1522,7 +1522,7 @@ const EVENTS = [
 // HISTORY ARTICLES (钩沉述往)
 // ============================================================
 const historyArticles = [
-{
+  {
     id: 2,
     title: '二战期间美国的日裔拘留营',
     date: '2026-06-02',
@@ -3269,11 +3269,13 @@ const historyArticles = [
 <p><img src="9.74.15.jpg" alt="" style="max-width:100%;margin:12px 0;border-radius:4px;"></p>
 <p>另，本次双年展的展览场地之一为自由公园（Freedom Park），其前身为英殖民政府建造的皇家布罗德街监狱（Her Majesty's Broad Street Prison）。初建于1882年，1979年废弃，上世纪末改造为公园，保留了原监狱的52间囚室，集纪念馆、历史地标（纪念碑）、遗址、艺术和休闲中心于一体。</p>`
   }
-]// ============================================================
+];
+
+// ============================================================
 // TRAVEL ARTICLES (游记)
 // ============================================================
 const travelArticles = [
-{
+  {
     id: 1,
     title: '五嶽归来不看山，青海归来不看狱--青海劳改农场旅游指南',
     date: '2026-06-06',
@@ -4185,7 +4187,755 @@ const travelArticles = [
 <p>29号，返回马尼拉，回家。</p>
 <p>多年前，宿务监狱（CPDRC）跳舞跳成网红。据说现在每周六开放参观，但需提前通过宿务旅游局脸书预约。我在该旅游局的脸书留言咨询，至今没收到回复。</p>`
   }
-]
+];
+
+// ============================================================
+const ROUTES = [
+  {id:"gulag", name:"苏联古拉格之路", icon:"❄️", days:"14-18天", subtitle:"从索洛韦茨基到科雷马", countries:"俄罗斯", theme:"古拉格并非一个集中营，而是一套遍布苏联全境的劳改体系。从白海到太平洋，囚犯用生命铺就了铁路和运河。",
+   stops:[
+     {name:"索洛韦茨基特别监狱", lat:65.0247, lng:35.7103, day:1, desc:"古拉格体系的原型。1923年，苏联第一个特别劳改营在索洛韦茨基修道院建立。"},
+     {name:"白海波罗的海运河", lat:62.0677, lng:34.2416, day:3, desc:"1931-1933年，约10万囚犯在无机械工具的条件下凿通227公里运河，死亡人数至今成谜。"},
+     {name:"彼尔姆-36号", lat:57.8176, lng:56.3226, day:5, desc:"苏联最后关闭的政治犯集中营。1988年才关闭，现为俄罗斯唯一保存完整的古拉格博物馆。"},
+     {name:"沃尔库塔矿业集中营", lat:67.5026, lng:64.0601, day:7, desc:"北极圈内的煤矿集中营。1953年斯大林死后爆发著名暴动，囚犯坚持66天。"},
+     {name:"马加丹悲伤面具", lat:59.5612, lng:150.7988, day:9, desc:"科雷马古拉格终点。「悲伤面具」雕像俯瞰马加丹港，纪念200万在此登陆的囚犯。"},
+   ]},
+  {id:"nazi-camps", name:"纳粹集中营之路", icon:"🕯️", days:"7-10天", subtitle:"德国·波兰·奥地利", countries:"德国·波兰·奥地利", theme:"第三帝国建立了超过44000个集中营。这条线路串联最具代表性的遗址，理解系统性迫害的运作逻辑。",
+   stops:[
+     {name:"达豪集中营", lat:48.2690, lng:11.4681, day:1, desc:"1933年3月建立，纳粹第一个集中营，成为后续所有集中营的建筑和管理模板。"},
+     {name:"萨克森豪森集中营", lat:52.7667, lng:13.2667, day:2, desc:"纳粹最早建立的大型集中营之一（1936），集中营建筑设计原型。「劳动使人自由」的讽刺之门。"},
+     {name:"布痕瓦尔德集中营", lat:51.0222, lng:11.2480, day:3, desc:"1937年建立。歌德曾漫步的山丘上建起了8万人死亡的巨大集中营。"},
+     {name:"毛特豪森集中营", lat:48.2570, lng:14.5017, day:5, desc:"奥地利最大的集中营，以「死亡阶梯」闻名——囚犯背负巨石攀登186级台阶。"},
+     {name:"奥斯维辛-比克瑙", lat:50.0359, lng:19.1783, day:7, desc:"规模最大的灭绝营，超过110万人在此遇害。保存最完整的灭绝营遗址，联合国世界遗产。"},
+   ]},
+  {id:"us-prisons", name:"美国监狱巡礼", icon:"🏛️", days:"10-14天", subtitle:"从恶魔岛到安哥拉", countries:"美国", theme:"美国拥有全球最高的监禁率。从传奇的恶魔岛到血腥的安哥拉，这是一条理解美国监狱文化的深度之旅。",
+   stops:[
+     {name:"恶魔岛", lat:37.8270, lng:-122.4230, day:1, desc:"旧金山湾的传奇监狱。关押过阿尔·卡彭和机关枪凯利，三次著名越狱至今成谜。"},
+     {name:"东州教养所", lat:39.9682, lng:-75.1726, day:3, desc:"费城。「教养所」（Penitentiary）概念的发源地。轮辐式建筑+完全独居——让罪犯通过孤独「忏悔」。"},
+     {name:"曼斯菲尔德感化院", lat:40.7483, lng:-82.5457, day:5, desc:"俄亥俄州。「肖申克的救赎」取景地。哥特复兴式监狱建筑，体现了19世纪末监狱「文明化」的理想。"},
+     {name:"安哥拉监狱博物馆", lat:30.9563, lng:-91.5943, day:8, desc:"路易斯安那州。美国最大的安全监狱之一，以牛仔竞技和规模著称。博物馆记录其残酷历史。"},
+     {name:"约克监狱遗址", lat:37.2279, lng:-76.4967, day:10, desc:"弗吉尼亚殖民地最古老的监狱遗址之一（1720年代），见证殖民司法体系雏形。"},
+   ]},
+  {id:"uk-ie", name:"英伦铁窗之旅", icon:"🏰", days:"7-10天", subtitle:"伦敦·都柏林·爱丁堡", countries:"英国·爱尔兰", theme:"英国是近代监狱改革的摇篮。从伦敦塔到基尔曼汉姆，城堡与监狱的重叠构成了英伦历史最暗黑的一面。",
+   stops:[
+     {name:"伦敦塔", lat:51.5081, lng:-0.0759, day:1, desc:"不仅是皇家宫殿，更是英国史上最著名的监狱。安妮·博林在此被斩首。"},
+     {name:"克令克监狱博物馆", lat:51.5067, lng:-0.0918, day:2, desc:"伦敦中世纪监狱的再现，体验中世纪刑罚的残酷。"},
+     {name:"什鲁斯伯里监狱", lat:52.7066, lng:-2.7546, day:4, desc:"英国最新的监狱改景点，2013年关闭后转为沉浸式监狱体验。"},
+     {name:"基尔曼汉姆监狱", lat:53.3420, lng:-6.3096, day:6, desc:"都柏林。1916年复活节起义领袖在此被处决。爱尔兰独立史的圣地。"},
+     {name:"爱丁堡地牢", lat:55.9490, lng:-3.1965, day:8, desc:"苏格兰首都。互动式恐怖地牢体验，展现中世纪苏格兰的司法黑暗面。"},
+   ]},
+  {id:"australia", name:"澳洲流放之路", icon:"🦘", days:"10-14天", subtitle:"从悉尼到弗里曼特", countries:"澳大利亚", theme:"1788-1868年间，英国向澳大利亚输送了约16.5万流放犯。这条线路追溯囚犯殖民史的遗迹，理解澳大利亚建国的特殊源流。",
+   stops:[
+     {name:"海德公园军营", lat:-33.8738, lng:151.2128, day:1, desc:"悉尼。1819年为流放犯修建的宿舍，联合国世界遗产。"},
+     {name:"鹦鹉岛监狱", lat:-33.8470, lng:151.1710, day:2, desc:"悉尼港的船坞监狱岛，1839-1909年最严酷的再犯流放地。"},
+     {name:"旧墨尔本监狱", lat:-37.8073, lng:144.9650, day:4, desc:"关押过澳洲最著名丛林匪徒内德·凯利，1841-1929年间绞刑执行地。"},
+     {name:"亚瑟港历史遗址", lat:-43.1499, lng:147.8511, day:7, desc:"塔斯马尼亚。1833-1877年最严酷的重犯流放地，联合国世界遗产。"},
+     {name:"弗里曼特监狱", lat:-32.0550, lng:115.7530, day:10, desc:"西澳。1855-1991年使用的世界遗产监狱，有著名的地下隧道探险。"},
+   ]},
+  {id:"east-asia", name:"东亚铁窗记忆", icon:"🏯", days:"10-14天", subtitle:"中·日·韩·台·港", countries:"中国·日本·韩国", theme:"东亚监狱折射出殖民、战争与内部控制的复杂历史。从日据监狱到白色恐怖园区，每一座都是权力与反抗的见证。",
+   stops:[
+     {name:"旅顺日俄监狱", lat:38.8519, lng:121.2516, day:1, desc:"大连。俄日殖民时期东北最大的监狱，保存极为完整的殖民监狱遗址。"},
+     {name:"抚顺战犯管理所", lat:41.8571, lng:123.9572, day:3, desc:"辽宁。改造日本战犯和伪满战俘的特殊场所。"},
+     {name:"西大门刑务所", lat:37.5739, lng:126.9557, day:5, desc:"首尔。日本殖民朝鲜时期的代表性监狱遗址。"},
+     {name:"网走监狱", lat:44.0091, lng:144.2720, day:8, desc:"北海道。日本最北端的集治监遗址，展现了北海道开拓史的血泪。"},
+     {name:"绿岛人权园区", lat:22.6697, lng:121.4739, day:11, desc:"台湾白色恐怖时期关押政治犯的离岛监狱。"},
+   ]},
+  {id:"latin-america", name:"拉美独裁牢笼", icon:"💀", days:"10-15天", subtitle:"智利·阿根廷·巴西", countries:"智利·阿根廷·巴西", theme:"拉丁美洲的监狱是20世纪军事独裁的最黑暗见证。从国家体育场到离岛集中营，数以万计的异议者在此消失。",
+   stops:[
+     {name:"智利国家体育场", lat:-33.4642, lng:-70.6109, day:1, desc:"圣地亚哥。1973年皮诺切特政变后，将国家体育场用作集中关押政治犯的临时营地。"},
+     {name:"ESMA博物馆", lat:-34.5378, lng:-58.4630, day:5, desc:"布宜诺斯艾利斯。阿根廷海军机械学校秘密拘留所，军事独裁时期最臭名昭著的酷刑中心。"},
+     {name:"卡兰迪鲁纪念馆", lat:-23.5080, lng:-46.6230, day:8, desc:"圣保罗。拉美最大监狱，1992年111名囚犯被杀。现已大部分拆除改为公园。"},
+   ]},
+  {id:"french-islands", name:"法国海外囚岛", icon:"⚓", days:"10-14天", subtitle:"法属圭亚那·留尼汪", countries:"法属圭亚那", theme:"法国将政治犯和重刑犯流放到海外岛屿的传统延续了百年。从魔鬼岛到留尼汪，热带天堂掩盖着人间地狱。",
+   stops:[
+     {name:"魔鬼岛", lat:5.2867, lng:-52.5858, day:1, desc:"法属圭亚那。法国最臭名昭著的流放地，德雷福斯上尉曾被关押于此。"},
+     {name:"圣约瑟夫岛", lat:5.2833, lng:-52.5833, day:2, desc:"魔鬼岛群岛中关押最危险囚犯的岛屿，孤独监禁区保存完好。"},
+     {name:"皇家岛", lat:5.2870, lng:-52.5890, day:3, desc:"魔鬼岛群岛的行政中心，医院、教堂和墓地讲述着流放者们的命运。"},
+     {name:"卡宴转运中心", lat:4.9213, lng:-52.3156, day:5, desc:"法属圭亚那首都。所有流放犯在此中转，殖民时代的监狱建筑仍存。"},
+   ]},
+  {id:"slave-trade", name:"非洲奴隶贸易之路", icon:"⛓️", days:"14-18天", subtitle:"塞内加尔·加纳·贝宁·安哥拉", countries:"塞内加尔·加纳·贝宁·安哥拉", theme:"跨大西洋奴隶贸易是人类历史上最大规模的强制迁徙。西非沿海的奴隶堡垒和地牢，见证了超过1200万非洲人被贩卖的惨痛历史。",
+   stops:[
+     {name:"戈雷岛奴隶屋", lat:14.6670, lng:-17.3973, day:1, desc:"塞内加尔达喀尔。联合国世界遗产。'不归之门'是数百万奴隶最后看到的非洲土地。"},
+     {name:"埃尔米纳城堡", lat:5.0827, lng:-1.3480, day:4, desc:"加纳海岸角。1482年葡萄牙修建，撒哈拉以南非洲最古老的欧洲建筑，地牢关押奴隶。"},
+     {name:"海岸角城堡", lat:5.1036, lng:-1.2410, day:5, desc:"加纳。英国最大的奴隶贸易据点。奥巴马2009年曾到访，地牢中'不归之门'通向登船点。"},
+     {name:"维达历史博物馆", lat:6.3650, lng:2.0853, day:8, desc:"贝宁。维达是奴隶海岸最重要港口。'奴隶之路'4公里步道从拍卖广场到海滩登船点。"},
+     {name:"阿波美皇宫", lat:7.1854, lng:1.9900, day:9, desc:"贝宁。达荷美王国皇宫，以参与奴隶贸易获取武器著称。墙上浮雕记录战争和俘虏场景。"},
+     {name:"本格拉堡垒", lat:-12.5793, lng:13.3985, day:13, desc:"安哥拉。葡萄牙奴隶贸易南大西洋枢纽。堡垒地牢曾关押等待装船的奴隶。"},
+     {name:"罗安达奴隶博物馆", lat:-8.8147, lng:13.2295, day:15, desc:"安哥拉首都。原奴隶贸易仓库改建，记录安哥拉400年殖民与奴隶输出史。"},
+   ]},
+  {id:"pinochet-prisons", name:"皮诺切特秘密监狱", icon:"🔴", days:"7-10天", subtitle:"圣地亚哥及周边", countries:"智利", theme:"1973-1990年皮诺切特军事独裁期间，智利遍布秘密拘押与酷刑中心。超过4万人被关押、酷刑或失踪。这条线路寻找记忆与正义的遗迹。",
+   stops:[
+     {name:"Villa Grimaldi和平公园", lat:-33.4589, lng:-70.5622, day:1, desc:"圣地亚哥。最臭名昭著的秘密酷刑中心，约5000人通过此地。现为记忆与人权公园。"},
+     {name:"Londres 38", lat:-33.4430, lng:-70.6530, day:2, desc:"圣地亚哥市中心。DINA秘密警察总部之一，至少96人在此失踪。"},
+     {name:"José Domingo Cañas", lat:-33.4450, lng:-70.6250, day:2, desc:"另一处DINA秘密拘押中心，大量政治犯在此遭受电刑和水刑。"},
+     {name:"国家体育场纪念馆", lat:-33.4642, lng:-70.6109, day:3, desc:"1973年9-11月关押了超过12000名政治犯。更衣室和走廊成为临时牢房。"},
+     {name:"记忆与人权博物馆", lat:-33.4400, lng:-70.6490, day:4, desc:"圣地亚哥。2010年开馆，系统记录1973-1990年的人权侵犯历史。"},
+     {name:"Colonia Dignidad", lat:-35.9130, lng:-71.4927, day:6, desc:"帕拉尔附近。德国移民建立的封闭社区/监狱，DINA在此进行酷刑和武器制造。"},
+     {name:"Chacabuco硝酸盐矿营", lat:-23.1420, lng:-69.5970, day:7, desc:"阿塔卡马沙漠。废弃硝酸盐矿场改造的集中营，1973-1975年关押政治犯。"},
+     {name:"Pisagua集中营遗址", lat:-19.5920, lng:-70.2090, day:8, desc:"北部港口。原剧院和学校被改造为集中营，发现多个乱葬岗。"},
+   ]},
+  {id:"japanese-internment", name:"日裔美国人集中营", icon:"🇯🇵", days:"10-14天", subtitle:"加州·亚利桑那·怀俄明等7州", countries:"美国", theme:"1942-1946年，美国将约12万日裔美国人强制迁入内陆集中营。10个War Relocation Authority营地从加州到阿肯色州，构成美国史上最大规模的国内拘禁行动。",
+   stops:[
+     {name:"曼萨纳集中营", lat:36.7250, lng:-118.1547, day:1, desc:"加州。保存最完整的集中营遗址，国家历史遗址。游客中心+复原营房。"},
+     {name:"图尔湖集中营", lat:41.8886, lng:-121.3744, day:2, desc:"加州北部。最大最严酷的集中营，关押'问题分子'。高峰时18800人被拘。"},
+     {name:"波斯顿集中营", lat:33.9820, lng:-114.4050, day:4, desc:"亚利桑那。当时亚利桑那第三大城市。营地布局完整但建筑已拆除，纪念碑存在。"},
+     {name:"吉拉河集中营", lat:33.0650, lng:-111.8260, day:5, desc:"亚利桑那。1942年开放的2个集中营之一。关押13000+人，1945年关闭。"},
+     {name:"托帕斯集中营", lat:40.3100, lng:-112.2400, day:7, desc:"犹他州。位于大盐湖沙漠，极端气候。纪念碑和部分地基遗迹。"},
+     {name:"心山集中营", lat:44.6600, lng:-108.9500, day:8, desc:"怀俄明州。以背后的心形山命名。营员中产生最强抵抗运动，63人因拒服兵役被定罪。"},
+     {name:"米尼多卡集中营", lat:42.6700, lng:-114.2300, day:10, desc:"爱达荷州。又称Hunt营地。营区面积最大，约33,000英亩。"},
+     {name:"格拉纳达集中营", lat:38.0800, lng:-102.3470, day:11, desc:"科罗拉多州。又称Amache营地。2022年成为国家历史遗址。保存最完整墓地。"},
+     {name:"罗威尔集中营", lat:34.3000, lng:-91.9600, day:13, desc:"阿肯色州。最东侧的集中营。营员主要来自洛杉矶。博物馆+少量建筑遗迹。"},
+     {name:"杰罗姆集中营", lat:33.3900, lng:-91.4800, day:14, desc:"阿肯色州。1944年最早关闭的集中营。主要关押夏威夷日裔。建筑已拆除，纪念碑设于原址。"},
+   ]},
+];
+
+// ============================================================
+// EVENTS CALENDAR RENDER
+// ============================================================
+function renderEventsView() {
+  var container = document.getElementById('events-view');
+  if (!container) return;
+
+  var months = {};
+  EVENTS.forEach(function(ev) {
+    if (!months[ev.month]) months[ev.month] = [];
+    months[ev.month].push(ev);
+  });
+
+  var monthNames = ['', '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+  var monthEmoji = ['', '🎆', '❄️', '🌸', '🌿', '🌺', '☀️', '🔥', '🌻', '🍂', '🎃', '🍁', '🎄'];
+  var html = '';
+
+  for (var m = 1; m <= 12; m++) {
+    var events = months[m] || [];
+    if (events.length === 0) continue;
+
+    html += '<div class="ev-month">';
+    html += '<div class="ev-month-header">';
+    html += '<span class="ev-month-badge">' + m + '月</span>';
+    html += monthEmoji[m] + ' ' + monthNames[m] + ' <span style="font-weight:400;font-size:10px;color:#888;margin-left:4px">' + events.length + ' 个活动</span>';
+    html += '</div>';
+
+    events.forEach(function(ev) {
+      html += '<div class="ev-item" onclick="flyToEvent(' + ev.lat + ',' + ev.lng + ')">';
+      html += '<div class="ev-icon">' + ev.icon + '</div>';
+      html += '<div class="ev-info">';
+      html += '<div class="ev-name">' + ev.name + '</div>';
+      html += '<div class="ev-location">' + ev.country + ' · ' + ev.city + '</div>';
+      html += '<div class="ev-date">📅 每年' + m + '月</div>';
+      html += '<div class="ev-desc">' + ev.desc + '</div>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+  }
+
+  if (!html) html = '<div class="ev-nodata">没有找到匹配的活动</div>';
+  container.innerHTML = html;
+}
+
+function flyToEvent(lat, lng) {
+  if (typeof map === 'undefined') return;
+  map.flyTo([lat, lng], 12, { duration: 1.2 });
+  // Find nearest museum and show its popup after fly
+  setTimeout(function() {
+    var nearest = null, nearestDist = Infinity;
+    for (var k in markers) {
+      var d = map.distance([lat, lng], markers[k].getLatLng());
+      if (d < nearestDist) { nearestDist = d; nearest = k; }
+    }
+    if (nearest && nearestDist < 50000) {
+      var m = MUSEUMS.find(function(x) { return x.id == nearest; });
+      if (m) showPopup(m);
+    }
+  }, 1400);
+}
+
+// ============================================================
+// ROUTES RENDER
+// ============================================================
+var routeLayer = null;
+var currentRouteId = null;
+
+function renderRoutesView() {
+  var container = document.getElementById('routes-view');
+  if (!container) return;
+
+  var html = '';
+  ROUTES.forEach(function(route) {
+    var isActive = (currentRouteId === route.id);
+    html += '<div class="route-card' + (isActive ? ' active-route' : '') + '" id="route-card-' + route.id + '">';
+    html += '<div class="route-header" onclick="toggleRoute(\'' + route.id + '\')">';
+    html += '<div class="route-icon">' + route.icon + '</div>';
+    html += '<div class="route-title-group">';
+    html += '<div class="route-name">' + route.name + '</div>';
+    html += '<div class="route-subtitle">' + route.subtitle + '</div>';
+    html += '<div class="route-meta"><span>🗓️ ' + route.days + '</span><span>📍 ' + route.countries + '</span><span>🛑 ' + route.stops.length + '站</span></div>';
+    html += '</div></div>';
+    html += '<div class="route-stops" id="route-stops-' + route.id + '" style="display:' + (isActive ? 'block' : 'none') + '">';
+    route.stops.forEach(function(stop, si) {
+      html += '<div class="route-stop" onclick="flyToRouteStop(' + stop.lat + ',' + stop.lng + ')">';
+      html += '<div class="route-stop-num">' + (si + 1) + '</div>';
+      html += '<div><div class="route-stop-name">' + stop.name + ' <span style="font-size:10px;color:#888">第' + stop.day + '天</span></div>';
+      html += '<div class="route-stop-desc">' + stop.desc + '</div></div>';
+      html += '</div>';
+    });
+    html += '<div class="route-theme"><b>💭 思考题</b><br>' + route.theme + '</div>';
+    html += '<div class="route-actions">';
+    html += '<button class="route-btn' + (isActive ? ' route-btn-active' : '') + '" onclick="selectRoute(\'' + route.id + '\')">🗺️ ' + (isActive ? '已显示' : '在地图显示') + '</button>';
+    if (isActive) html += '<button class="route-btn" onclick="clearRoute()">✕ 清除</button>';
+    html += '</div></div></div>';
+  });
+
+  if (!html) html = '<div class="ev-nodata">没有找到匹配的线路</div>';
+  container.innerHTML = html;
+}
+
+function toggleRoute(routeId) {
+  var stops = document.getElementById('route-stops-' + routeId);
+  if (!stops) return;
+  stops.style.display = (stops.style.display === 'none') ? 'block' : 'none';
+}
+
+function selectRoute(routeId) {
+  clearRoute();
+  currentRouteId = routeId;
+  var route = ROUTES.find(function(r) { return r.id === routeId; });
+  if (!route) return;
+
+  routeLayer = L.layerGroup().addTo(map);
+
+  // Add markers for each stop
+  route.stops.forEach(function(stop, i) {
+    var marker = L.circleMarker([stop.lat, stop.lng], {
+      radius: 8, color: '#ffd700', fillColor: '#ffd700', fillOpacity: 0.8, weight: 2
+    }).addTo(routeLayer);
+    marker.bindPopup('<b>' + stop.name + '</b><br><small>第' + stop.day + '天 · ' + stop.desc + '</small>');
+  });
+
+  // Draw polyline connecting stops
+  var latlngs = route.stops.map(function(s) { return [s.lat, s.lng]; });
+  L.polyline(latlngs, { color: '#ffd700', weight: 3, dashArray: '8 6', opacity: 0.7 }).addTo(routeLayer);
+
+  // Fit bounds
+  var bounds = L.latLngBounds(latlngs);
+  map.fitBounds(bounds, { padding: [60, 60] });
+
+  renderRoutesView();
+}
+
+function clearRoute() {
+  if (routeLayer) { map.removeLayer(routeLayer); routeLayer = null; }
+  currentRouteId = null;
+  renderRoutesView();
+}
+
+function flyToRouteStop(lat, lng) {
+  if (typeof map === 'undefined') return;
+  map.flyTo([lat, lng], 14, { duration: 1.2 });
+}
+
+// ============================================================
+// TRAVEL (游记)
+// ============================================================
+function renderTravelView() {
+  var container = document.getElementById('travel-view');
+  if (!container) return;
+
+  if (travelArticles.length === 0) {
+    container.innerHTML = '<div class="tn-empty"><span class="tn-empty-icon">📝</span>游记<br><small style="color:#555;">游记文章，即将上线</small></div>';
+    return;
+  }
+
+  container.innerHTML = travelArticles.map(a => `
+    <div class="ha-card" onclick="showTravelArticle(${a.id})">
+      <div class="ha-card-title">${a.title}</div>
+    </div>
+  `).join('');
+}
+
+function showTravelArticle(id) {
+  var article = travelArticles.find(a => a.id === id);
+  if (!article) return;
+
+  var container = document.getElementById('travel-view');
+  if (!container) return;
+
+  var html = article.content;
+  html = html.replace(/\{IMAGE:(\d+):([^}]+)\}/g, function(match, num, desc) {
+    return '<div class="ha-img-placeholder">📷 图片' + num + '：' + desc + '（待上传）</div>';
+  });
+
+  container.innerHTML = '<div class="hc-back" onclick="closeTravelArticle()">← 返回列表</div>'
+    + '<div class="ha-detail">' + html + '</div>'
+    + '<div class="hc-back" onclick="closeTravelArticle()" style="margin-top:12px;">← 返回列表</div>';
+
+  var panelBody = container.closest('.panel-body');
+  if (panelBody) panelBody.scrollTop = 0;
+}
+
+function closeTravelArticle() {
+  renderTravelView();
+}
+// ============================================================
+// HISTORY (钩沉述往)
+// ============================================================
+function renderHistoryView() {
+  var container = document.getElementById('history-view');
+  if (!container) return;
+
+  if (historyArticles.length === 0) {
+    container.innerHTML = '<div class="tn-empty"><span class="tn-empty-icon">📜</span>钩沉述往<br><small style="color:#555;">监狱历史与事件，即将上线</small></div>';
+    return;
+  }
+
+  container.innerHTML = historyArticles.map(a => `
+    <div class="ha-card" onclick="showHistoryArticle(${a.id})">
+      <div class="ha-card-title">${a.title}</div>
+    </div>
+  `).join('');
+}
+
+function showHistoryArticle(id) {
+  var article = historyArticles.find(a => a.id === id);
+  if (!article) return;
+
+  // Build content HTML, replace image placeholders
+  var html = article.content;
+  html = html.replace(/\{IMAGE:(\d+):([^}]+)\}/g, function(match, num, desc) {
+    return `<div class="ha-img-placeholder" style="background:#0d0d1a;border:1px dashed #333;padding:20px;text-align:center;color:#666;margin:12px 0;border-radius:6px;">
+      📷 图片${num}：${desc}（待上传）
+    </div>`;
+  });
+  html = html.replace(/\{PLACEHOLDER:([^}]+)\}/g, function(match, desc) {
+    return `https://via.placeholder.com/600x300/0d0d1a/666?text=${encodeURIComponent(desc)}`;
+  });
+
+  // Create full-page overlay
+  var overlay = document.createElement('div');
+  overlay.className = 'ha-overlay';
+  overlay.id = 'ha-overlay';
+  overlay.innerHTML = `
+    <div class="ha-overlay-inner">
+      <div class="ha-overlay-back" onclick="closeHistoryArticle()">← 返回列表</div>
+      ${html}
+      <div class="ha-overlay-back" onclick="closeHistoryArticle()" style="margin-top:30px;">← 返回列表</div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  window.scrollTo(0, 0);
+}
+
+function closeHistoryArticle() {
+  var overlay = document.getElementById('ha-overlay');
+  if (overlay) overlay.remove();
+}
+
+// flyToMuseum(lat,lng) removed - using original flyToMuseum(id) from main block
+
+
+
+
+
+
+function highlightListItem(id) {
+  document.querySelectorAll('.museum-item').forEach(el => el.classList.remove('active-item'));
+  const el = document.getElementById('item-' + id);
+  if (el) {
+    el.classList.add('active-item');
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+// ============================================================
+// STATS
+// ============================================================
+function updateStats() {
+  const total = MUSEUMS.length;
+  const checked = MUSEUMS.filter(m => checkedSet.has(m.id)).length;
+  document.getElementById('total-count').textContent = total;
+  document.getElementById('checked-count').textContent = checked;
+  const pct = Math.round(checked / total * 100);
+  let msg = '开始你的旅程吧！';
+  if (pct >= 100) msg = '🏆 全部打卡完成！传奇旅行家！';
+  else if (pct >= 80) msg = `🌟 已完成 ${pct}%，即将完成！`;
+  else if (pct >= 50) msg = `🎯 已完成 ${pct}%，继续加油！`;
+  else if (pct >= 20) msg = `✈️ 已完成 ${pct}%，旅程过半！`;
+  else if (pct > 0) msg = `🗺 已打卡 ${checked}/${total} 个`;
+  document.getElementById('progress-text').textContent = msg;
+}
+
+// ============================================================
+// LIST RENDER
+// ============================================================
+function getFilteredMuseums() {
+  return MUSEUMS.filter(m => {
+    if (currentRegion !== '全部' && m.region !== currentRegion) return false;
+    if (currentView === 'checked' && !checkedSet.has(m.id)) return false;
+    if (currentView === 'unchecked' && checkedSet.has(m.id)) return false;
+    if (searchText) {
+      const q = searchText.toLowerCase();
+      if (!(m.name.toLowerCase().includes(q) ||
+            m.country.toLowerCase().includes(q) ||
+            m.region.toLowerCase().includes(q) ||
+            (m.address && m.address.toLowerCase().includes(q)))) return false;
+    }
+    return true;
+  });
+}
+
+function renderList() {
+  if (currentView === 'timeline') {
+    renderTimeline();
+    return;
+  }
+  const list = document.getElementById('museum-list');
+  const filtered = getFilteredMuseums();
+  if (filtered.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:#aaa;padding:30px 16px;font-size:13px;">没有找到匹配的博物馆</div>';
+    return;
+  }
+  list.innerHTML = filtered.map(m => {
+    const checked = checkedSet.has(m.id);
+    const color = m.category === 'hotel' ? '#e8590c' : getColor(m.region);
+    const isHotel = m.category === 'hotel';
+    const prefix = isHotel ? '🏨' : '#';
+    return `<div class="museum-item ${checked ? 'checked' : ''} ${isHotel ? 'hotel' : ''}" id="item-${m.id}" onclick="flyToMuseum(${m.id})">
+      <div class="item-check ${checked ? 'checked' : ''}" onclick="toggleCheck(${m.id}, event)" title="打卡">✓</div>
+      <div class="item-info">
+        <div class="item-name"><span class="item-num" style="color:${color}">${prefix}${m.id}</span>${m.name}</div>
+        <div class="item-meta">${isHotel ? '🏨 ' : '📍'}${m.country} · ${m.region}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// TIMELINE
+// ============================================================
+const TIMELINE_PERIODS = [
+  { key:'ancient', label:'🏛 古代与中世纪', range:'—1500', desc:'早期的监禁场所与地牢', order:1 },
+  { key:'colonial', label:'⛵ 殖民时代到监狱近代化改革前', range:'1500–1770', desc:'殖民扩张中的监狱体系', order:2 },
+  { key:'c19', label:'🏭 监狱近代化改革后', range:'1770–1900', desc:'工业革命与监狱改革', order:3 },
+  { key:'early20', label:'⚔ 20世纪早期', range:'1900–1939', desc:'一战前后与动荡年代', order:4 },
+  { key:'ww2', label:'🔥 二战时期', range:'1939–1945', desc:'纳粹集中营、战俘营与浩劫', order:5 },
+  { key:'coldwar', label:'❄ 冷战时期', range:'1945–1991', desc:'政治犯与隔离监狱', order:6 },
+  { key:'modern', label:'🏗 当代改造', range:'1991—', desc:'改造为博物馆、酒店与文创空间', order:7 },
+  { key:'unknown', label:'❓ 待分类', range:'', desc:'年代待确认', order:8 },
+];
+
+const MUSEUM_PERIODS = {
+  // === 古代与中世纪 ===
+  7:'ancient', 10:'ancient', 65:'ancient', 73:'ancient', 91:'ancient', 113:'ancient', 114:'ancient',
+  116:'ancient', 125:'ancient', 138:'ancient', 147:'ancient', 152:'ancient', 153:'ancient', 154:'ancient',
+  155:'ancient', 157:'ancient', 163:'ancient', 166:'ancient', 169:'ancient', 170:'ancient', 176:'ancient',
+  179:'ancient', 194:'ancient',
+  // === 殖民时代到监狱近代化改革前 ===
+  9:'colonial', 26:'colonial', 36:'colonial', 39:'colonial', 40:'colonial', 48:'colonial', 49:'colonial',
+  63:'colonial', 64:'colonial', 115:'colonial', 119:'colonial', 128:'colonial', 151:'colonial',   158:'colonial', 168:'colonial', 172:'colonial', 177:'colonial', 180:'colonial',
+  184:'colonial', 188:'colonial', 193:'colonial', 196:'colonial', 197:'colonial',
+  200:'colonial', 201:'colonial',
+  // === 监狱近代化改革后 ===
+  159:'c19', 182:'c19', 183:'c19', 198:'c19', 221:'c19', 247:'c19',
+  19:'c19', 23:'c19', 24:'c19', 27:'c19', 30:'c19', 31:'c19', 38:'c19', 53:'c19', 55:'c19', 56:'c19', 57:'c19',
+  58:'c19', 59:'c19', 60:'c19', 62:'c19', 68:'c19', 78:'c19', 79:'c19', 80:'c19', 89:'c19', 90:'c19', 97:'c19',
+  99:'c19', 101:'c19', 106:'c19', 112:'c19', 120:'c19', 121:'c19', 122:'c19', 123:'c19', 124:'c19', 127:'c19',
+  129:'c19', 130:'c19', 131:'c19', 139:'c19', 140:'c19', 141:'c19', 142:'c19', 143:'c19', 145:'c19', 148:'c19',
+  149:'c19', 150:'c19', 160:'c19', 161:'c19', 162:'c19', 164:'c19', 165:'c19', 167:'c19', 171:'c19',
+  173:'c19', 174:'c19', 178:'c19', 181:'c19', 185:'c19', 187:'c19', 189:'c19', 190:'c19', 191:'c19', 192:'c19',
+  202:'c19', 203:'c19', 204:'c19', 205:'c19', 206:'c19', 207:'c19', 210:'c19', 211:'c19', 212:'c19', 213:'c19',
+  214:'c19', 215:'c19', 216:'c19', 217:'c19', 218:'c19', 219:'c19', 220:'c19', 222:'c19', 223:'c19', 224:'c19',
+  225:'c19', 226:'c19', 227:'c19', 228:'c19', 229:'c19', 230:'c19', 231:'c19', 232:'c19', 233:'c19', 234:'c19',
+  235:'c19', 236:'c19', 238:'c19', 239:'c19', 240:'c19', 242:'c19', 243:'c19', 244:'c19', 245:'c19', 246:'c19',
+  248:'c19', 249:'c19', 250:'c19', 251:'c19', 252:'c19', 254:'c19', 255:'c19', 256:'c19', 257:'c19', 258:'c19',
+  260:'c19', 262:'c19', 263:'c19', 267:'c19', 268:'c19', 269:'c19', 270:'c19', 271:'c19', 272:'c19', 273:'c19',
+  274:'c19', 275:'c19', 276:'c19', 277:'c19', 278:'c19', 279:'c19', 280:'c19', 281:'c19', 282:'c19', 283:'c19',
+  284:'c19', 285:'c19',
+  // === 20世纪早期 ===
+  1:'early20', 2:'early20', 4:'early20', 8:'early20', 12:'early20', 13:'early20', 14:'early20', 18:'early20',
+  21:'early20', 28:'early20', 32:'early20', 41:'early20', 42:'early20', 46:'early20', 50:'early20',
+  51:'early20', 52:'early20', 61:'early20', 69:'early20', 71:'early20', 74:'early20', 75:'early20',
+  96:'early20', 98:'early20', 117:'early20', 118:'early20', 126:'early20', 133:'early20', 144:'early20',
+  175:'early20', 186:'early20', 208:'early20', 209:'early20', 237:'early20', 241:'early20', 253:'early20',
+  259:'early20', 266:'early20', 67:'early20',
+  81:'early20', 82:'early20', 83:'early20', 84:'early20', 85:'early20', 86:'early20', 87:'early20',
+  88:'early20', 92:'early20', 93:'early20', 94:'early20',
+  // === 二战时期 ===
+  3:'ww2', 6:'ww2', 15:'ww2', 17:'ww2', 102:'ww2', 105:'ww2', 107:'ww2', 108:'ww2', 109:'ww2', 110:'ww2',
+  111:'ww2', 132:'ww2', 134:'ww2', 135:'ww2', 136:'ww2', 137:'ww2', 156:'ww2',
+  // === 冷战时期 ===
+  5:'coldwar', 11:'coldwar', 16:'coldwar', 20:'coldwar', 22:'coldwar', 29:'coldwar', 34:'coldwar',
+  35:'coldwar', 37:'coldwar', 43:'coldwar', 44:'coldwar', 54:'coldwar', 66:'coldwar', 70:'coldwar',
+  72:'coldwar', 76:'coldwar', 77:'coldwar', 103:'coldwar', 104:'coldwar', 146:'coldwar', 195:'coldwar',
+  199:'coldwar', 261:'coldwar', 265:'coldwar',
+  // === 当代改造 ===
+  25:'modern', 33:'modern', 45:'modern', 47:'modern', 95:'modern', 100:'modern', 264:'modern'
+};
+
+function getMuseumPeriod(m) {
+  // 1. Check manual override
+  if (MUSEUM_PERIODS[m.id]) return MUSEUM_PERIODS[m.id];
+  // 2. Hotels are always modern
+  if (m.category === 'hotel') return 'modern';
+  // 3. Heuristic by keywords in name/desc
+  const text = (m.name + ' ' + (m.desc||'')).toLowerCase();
+  if (/二战|纳粹|集中营|战俘|holocaust|auschwitz|dachau|buchenwald|bergen|sachsenhausen|neuengamme|mauthausen|ravensbr|treblinka|sobibor|majdanek|chelmno|gestapo|ss camp/.test(text)) return 'ww2';
+  if (/冷战|cold war|铁幕|iron curtain|政治犯|political prison|克格勃|kgb|斯塔西|stasi/.test(text)) return 'coldwar';
+  if (/殖民|penal colon|流放|convict|transportation/.test(text)) return 'colonial';
+  if (/维多利亚|victorian|19世纪|1800|19th/.test(text)) return 'c19';
+  // 4. Region-based defaults
+  if (m.region === '大洋洲' || m.country === '澳大利亚' || m.country === 'Australia') return 'c19';
+  return 'unknown';
+}
+
+function renderTimeline() {
+  const list = document.getElementById('museum-list');
+  const filtered = getFilteredMuseums();
+  if (filtered.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:#aaa;padding:30px 16px;font-size:13px;">没有匹配的博物馆</div>';
+    return;
+  }
+
+  // Group by period
+  const groups = {};
+  filtered.forEach(m => {
+    const period = getMuseumPeriod(m);
+    if (!groups[period]) groups[period] = [];
+    groups[period].push(m);
+  });
+
+  // Build visual timeline nav bar
+  const activePeriods = TIMELINE_PERIODS.filter(tp => (groups[tp.key]||[]).length > 0);
+  const shortLabels = {
+    'ancient': '古代', 'colonial': '殖民', 'c19': '19世纪',
+    'early20': '20世纪初', 'ww2': '二战', 'coldwar': '冷战',
+    'modern': '当代', 'unknown': '待分类'
+  };
+  let navHtml = '<div id="tl-nav"><div id="tl-nav-track"><div id="tl-nav-line"></div>';
+  activePeriods.forEach((tp, i) => {
+    const pct = activePeriods.length === 1 ? 50 : (i / (activePeriods.length - 1)) * 100;
+    const count = (groups[tp.key]||[]).length;
+    navHtml += `<div class="tl-nav-node" style="left:${pct}%" onclick="scrollToEra('era-${tp.key}')" id="nav-${tp.key}">
+      <div class="tl-nav-dot"></div>
+      <div class="tl-nav-count">${count}</div>
+      <div class="tl-nav-label">${shortLabels[tp.key]||tp.key}</div>
+    </div>`;
+  });
+  navHtml += '</div></div>';
+
+  // Build era list HTML
+  let html = '<div id="timeline-view">' + navHtml;
+  TIMELINE_PERIODS.forEach(tp => {
+    const items = groups[tp.key] || [];
+    if (items.length === 0) return;
+    html += `<div class="tl-era" id="era-${tp.key}">
+      <div class="tl-era-header" onclick="toggleEra(this)">
+        <span>${tp.label} <span style="font-size:11px;color:#aaa;">${tp.range}</span></span>
+        <span class="tl-era-count">${items.length} 个</span>
+      </div>
+      <div class="tl-era-body">`;
+    items.forEach(m => {
+      const checked = checkedSet.has(m.id);
+      const isHotel = m.category === 'hotel';
+      const dotColor = isHotel ? '#e8590c' : getColor(m.region);
+      html += `<div class="tl-item ${checked?'checked':''} ${isHotel?'hotel':''}" onclick="flyToMuseum(${m.id})">
+        <div class="tl-dot" style="background:${dotColor}"></div>
+        <div class="tl-name">${isHotel?'🏨 ':''}${m.name}</div>
+        <div class="tl-country">${m.country}</div>
+        <div class="tl-check ${checked?'checked':''}" onclick="toggleCheck(${m.id},event)" title="打卡">✓</div>
+      </div>`;
+    });
+    html += '</div></div>';
+  });
+  html += '</div>';
+  list.innerHTML = html;
+
+  // Highlight nav node on scroll
+  const container = list;
+  container.addEventListener('scroll', function() {
+    const nodes = activePeriods.map(tp => document.getElementById('era-' + tp.key)).filter(Boolean);
+    let current = null;
+    nodes.forEach(node => {
+      if (node.offsetTop - container.scrollTop <= 60) current = node.id.replace('era-','');
+    });
+    document.querySelectorAll('.tl-nav-node').forEach(n => n.classList.remove('active'));
+    if (current) {
+      const activeNav = document.getElementById('nav-' + current);
+      if (activeNav) activeNav.classList.add('active');
+    }
+  }, { passive: true });
+}
+
+// ============================================================
+// MAP FLY
+// ============================================================
+// ============================================================
+// 移动端抽屉侧边栏
+// ============================================================
+function openDrawer() {
+  document.getElementById('sidebar').classList.add('drawer-open');
+  const overlay = document.getElementById('sidebar-overlay');
+  overlay.style.display = 'block';
+  requestAnimationFrame(() => overlay.classList.add('active'));
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer() {
+  document.getElementById('sidebar').classList.remove('drawer-open');
+  const overlay = document.getElementById('sidebar-overlay');
+  overlay.classList.remove('active');
+  setTimeout(() => { overlay.style.display = 'none'; }, 260);
+  document.body.style.overflow = '';
+}
+
+function autoCloseDrawer() {
+  if (window.innerWidth <= 768) closeDrawer();
+}
+
+function scrollToEra(eraId) {
+  const el = document.getElementById(eraId);
+  const list = document.getElementById('museum-list');
+  if (el && list) {
+    list.scrollTo({ top: el.offsetTop - 80, behavior: 'smooth' });
+    // Highlight nav node
+    const key = eraId.replace('era-','');
+    document.querySelectorAll('.tl-nav-node').forEach(n => n.classList.remove('active'));
+    const navNode = document.getElementById('nav-' + key);
+    if (navNode) navNode.classList.add('active');
+  }
+}
+
+function toggleEra(header) {
+  const body = header.nextElementSibling;
+  if (body) {
+    body.style.display = body.style.display === 'none' ? '' : 'none';
+    header.style.opacity = body.style.display === 'none' ? '0.5' : '1';
+  }
+}
+
+function flyToMuseum(id) {
+  const museum = MUSEUMS.find(m => m.id === id);
+  if (!museum) return;
+  autoCloseDrawer();
+  map.flyTo([museum.lat, museum.lng], 16, { duration: 1.2 });
+  setTimeout(() => showPopup(museum), 800);
+}
+
+// ============================================================
+// FILTER
+// ============================================================
+function setRegion(region, btn) {
+  currentRegion = region;
+  document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+}
+
+function setView(view, btn) {
+  currentView = view;
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+}
+
+function filterList() {
+  searchText = document.getElementById('search-box').value.trim();
+  renderList();
+}
+
+// ============================================================
+// SHARE CARD
+// ============================================================
+var _shareMuseum = null;
+function showShareCard(id) {
+  var m = MUSEUMS.find(function(x){return x.id===id;});
+  if (!m) return;
+  _shareMuseum = m;
+  document.getElementById('sc-name').textContent = m.name;
+  document.getElementById('sc-country').innerHTML = '🌍 '+m.country;
+  var color = getColor(m.region);
+  document.getElementById('sc-region').innerHTML = '<span class="dot" style="background:'+color+'"></span> '+m.region;
+  var dateStr = checkedDates[id] || '';
+  if (dateStr) {
+    var parts = dateStr.split('-');
+    document.getElementById('sc-date').textContent = '📅 '+parts[0]+'年'+parseInt(parts[1])+'月'+parseInt(parts[2])+'日';
+  } else {
+    document.getElementById('sc-date').textContent = '📅 打卡日期不详';
+  }
+  document.getElementById('sc-id').textContent = '🔢 #'+m.id;
+  document.getElementById('sc-stamp').textContent = '已打卡';
+  // Country abbreviation for stamp
+  var countryMap = {'中国':'CN','日本':'JP','韩国':'KR','越南':'VN','泰国':'TH','马来西亚':'MY','印尼':'ID','菲律宾':'PH','新加坡':'SG','缅甸':'MM','柬埔寨':'KH','老挝':'LA','印度':'IN','斯里兰卡':'LK','哈萨克斯坦':'KZ','乌兹别克斯坦':'UZ','伊朗':'IR','土耳其':'TR','以色列':'IL','英国':'UK','法国':'FR','德国':'DE','意大利':'IT','西班牙':'ES','葡萄牙':'PT','荷兰':'NL','比利时':'BE','瑞士':'CH','奥地利':'AT','捷克':'CZ','波兰':'PL','匈牙利':'HU','罗马尼亚':'RO','保加利亚':'BG','塞尔维亚':'RS','克罗地亚':'HR','斯洛文尼亚':'SI','拉脱维亚':'LV','爱沙尼亚':'EE','立陶宛':'LT','芬兰':'FI','瑞典':'SE','挪威':'NO','丹麦':'DK','冰岛':'IS','俄罗斯':'RU','乌克兰':'UA','白俄罗斯':'BY','格鲁吉亚':'GE','亚美尼亚':'AM','阿塞拜疆':'AZ','希腊':'GR','爱尔兰':'IE','卢森堡':'LU','摩纳哥':'MC','马耳他':'MT','塞浦路斯':'CY','南非':'ZA','埃及':'EG','摩洛哥':'MA','埃塞俄比亚':'ET','肯尼亚':'KE','加纳':'GH','美国':'US','加拿大':'CA','墨西哥':'MX','古巴':'CU','阿根廷':'AR','巴西':'BR','智利':'CL','哥伦比亚':'CO','秘鲁':'PE','玻利维亚':'BO','厄瓜多尔':'EC','委内瑞拉':'VE','乌拉圭':'UY','巴拉圭':'PY','尼加拉瓜':'NI','澳大利亚':'AU','新西兰':'NZ','巴布亚新几内亚':'PG'};
+  var abbr = countryMap[m.country] || m.country.slice(0,3).toUpperCase();
+  document.getElementById('sc-stamp').textContent = abbr;
+  document.getElementById('share-overlay').classList.add('show');
+}
+function closeShareModal(e) {
+  if (e && e.target !== document.getElementById('share-overlay')) return;
+  document.getElementById('share-overlay').classList.remove('show');
+  _shareMuseum = null;
+}
+function downloadShareCard() {
+  var card = document.getElementById('share-card');
+  var btn = document.querySelector('.btn-save');
+  btn.textContent = '⏳ 生成中...';
+  btn.disabled = true;
+  html2canvas(card, {backgroundColor:null, scale:2, useCORS:true}).then(function(canvas){
+    var link = document.createElement('a');
+    link.download = 'prison-checkin-'+(_shareMuseum?String(_shareMuseum.id).padStart(3,'0'):'card')+'.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    btn.textContent = '💾 保存图片';
+    btn.disabled = false;
+  }).catch(function(){
+    btn.textContent = '💾 保存图片';
+    btn.disabled = false;
+    alert('生成失败，请重试');
+  });
+}
+
+// ============================================================
+// STATS SHARE CARD
+// ============================================================
+function showStats() {
+  var total = MUSEUMS.length;
+  var checked = MUSEUMS.filter(function(m){ return checkedSet.has(m.id); }).length;
+  var checkedIds = Array.from(checkedSet);
+  var wishlist = JSON.parse(localStorage.getItem('prison_wishlist') || '[]');
+  var want = wishlist.length;
+
+  // Countries explored
+  var countries = new Set();
+  checkedIds.forEach(function(id){
+    var m = MUSEUMS.find(function(x){ return x.id === id; });
+    if (m) countries.add(m.country);
+  });
+  var countryCount = countries.size;
+  var pct = total > 0 ? Math.round(checked / total * 100) : 0;
+
+  // Update top numbers
+  document.getElementById('st-checked').textContent = checked;
+  document.getElementById('st-total').textContent = total;
+  document.getElementById('st-want').textContent = want;
+  document.getElementById('st-countries').textContent = countryCount;
+  document.getElementById('st-progress-fill').style.width = pct + '%';
+  document.getElementById('st-pct').textContent = '完成率 ' + pct + '%';
+
+  // Region breakdown
+  var regionColors = {
+    '东亚':'#ff6b6b','东南亚':'#f97316','南亚':'#a855f7','中亚':'#0ea5e9',
+    '西亚':'#ec4899','欧洲':'#8b5cf6','非洲':'#eab308','北美':'#ef4444',
+    '南美洲':'#f43f5e','大洋洲':'#06b6d4'
+  };
+  var regions = ['东亚','东南亚','南亚','中亚','西亚','欧洲','非洲','北美','南美洲','大洋洲'];
+  var regionCounts = {};
+  regions.forEach(function(r){ regionCounts[r] = {total:0, checked:0}; });
+  MUSEUMS.forEach(function(m){
+    if (regionCounts[m.region]) {
+      regionCounts[m.region].total++;
+      if (checkedSet.has(m.id)) regionCounts[m.region].checked++;
+    }
+  });
+  var rowsHtml = regions.map(function(r){
+    var c = regionCounts[r];
     if (c.total === 0) return '';
     var barPct = c.total > 0 ? Math.round(c.checked / c.total * 100) : 0;
     var color = regionColors[r] || '#888';
